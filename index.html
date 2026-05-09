@@ -588,17 +588,17 @@
             .action-row .act-desc { font-size: 13px !important; line-height: 1.8 !important; color: #666 !important; }
             .action-row .act-weight { display: inline-block !important; width: fit-content !important; padding: 5px 12px !important; background: #eef2ff !important; border-radius: 999px !important; font-size: 11px !important; font-weight: 700 !important; color: #667eea !important; text-align: left !important; }
 
-            /* 引导弹窗 · 手机端抽屉 */
+            /* 引导弹窗 · 手机端抽屉化（只改 container 尺寸 + 字号，不要改 anim/steps 的行布局，交给 switchHelpDevice JS 判断） */
             #helpModal { padding: 0 !important; align-items: flex-end !important; }
             #helpModal > div { max-width: 100% !important; width: 100% !important; max-height: 92vh !important; margin: 0 !important; border-radius: 18px 18px 0 0 !important; }
-            #helpAnim { min-height: 160px !important; max-height: 240px !important; padding: 14px !important; overflow: hidden !important; }
-            #helpAnim svg { max-width: 100% !important; max-height: 100% !important; width: auto !important; height: auto !important; }
-            #helpSteps { padding: 18px 20px 24px !important; }
             #helpModal h2 { font-size: 19px !important; }
             #helpModal p, #helpModal li, #helpModal button { font-size: 14px !important; line-height: 1.75 !important; }
+        }
 
-            /* 视图切换/FAB 缩小 */
-            .view-switcher { top: 10px !important; left: 10px !important; }
+        /* view-switcher：整站居中顶部（桌面 + 手机都居中） */
+        .view-switcher { left: 50% !important; transform: translateX(-50%) !important; }
+        @media (max-width: 640px) {
+            .view-switcher { top: 10px !important; }
             .view-switcher .view-btn { padding: 5px 10px !important; font-size: 11px !important; }
             #toggleCommentVisBtn, #helpBtn { transform: scale(0.92); transform-origin: top right; }
         }
