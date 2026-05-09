@@ -155,7 +155,8 @@
         .help-step.active span:first-child { background: #667eea !important; }
 
         /* SVG 动画：每个步骤的演示 */
-        .help-svg { width: 100%; height: 320px; max-width: 360px; }
+        .help-svg { width: 100%; height: 320px; max-width: 360px; max-height: 320px; }
+        @media (max-width: 640px) { .help-svg { height: auto; max-height: 30vh; } }
         .help-svg .demo-cursor { transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
         .help-svg .demo-elem { transition: all 0.4s; }
         .help-svg .demo-panel { transition: opacity 0.5s, transform 0.5s; }
@@ -2792,7 +2793,7 @@
 
         // 三个步骤的 SVG 动画（CSS animation 驱动）
         const HELP_ANIMS = {
-            "pc-1": `<svg viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;">
+            "pc-1": `<svg class="help-svg" viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg">
                 <defs><style>
                     @keyframes c1 { 0%,20% { transform: translate(30px,160px); opacity:0; } 25% { opacity:1; } 60%,100% { transform: translate(140px,100px); opacity:1; } }
                     @keyframes e1 { 0%,55% { stroke:#ddd; fill:white; } 65%,100% { stroke:#667eea; stroke-width:2.5; fill:rgba(102,126,234,0.10); } }
@@ -2806,7 +2807,7 @@
                 <g class="c1"><path d="M0 0 L0 16 L4 12 L7 19 L9 18 L6 11 L12 11 Z" fill="#333" stroke="white" stroke-width="1"/></g>
                 <text x="140" y="180" text-anchor="middle" font-size="11" fill="#333" font-weight="600">⌘/Ctrl + 单击选中</text>
             </svg>`,
-            "pc-2": `<svg viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;">
+            "pc-2": `<svg class="help-svg" viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg">
                 <defs><style>
                     @keyframes b2 { 0%,30% { opacity:0; transform:translateY(6px); } 45%,100% { opacity:1; transform:translateY(0); } }
                     @keyframes t2 { 0%,55% { opacity:0; } 70%,100% { opacity:1; } }
@@ -2825,7 +2826,7 @@
                     <text x="12" y="36" font-size="11" fill="#333">这里数据要再核对一下</text>
                 </g>
             </svg>`,
-            "pc-3": `<svg viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;">
+            "pc-3": `<svg class="help-svg" viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg">
                 <rect x="20" y="30" width="240" height="140" rx="8" fill="white" stroke="#e0e0e0"/>
                 <text x="140" y="58" text-anchor="middle" font-size="13" fill="#1a1a1a" font-weight="700">feedback.md</text>
                 <line x1="40" y1="72" x2="240" y2="72" stroke="#f0f0f0"/>
@@ -2835,7 +2836,7 @@
                 <text x="40" y="154" font-size="10" fill="#666">- [actions] 行动项 · 3 条</text>
                 <text x="140" y="188" text-anchor="middle" font-size="11" fill="#667eea" font-weight="600">📤 作者一键导出 Markdown</text>
             </svg>`,
-            "mobile-1": `<svg viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;">
+            "mobile-1": `<svg class="help-svg" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg">
                 <defs><style>
                     @keyframes bt { 0%,30% { fill:white; stroke:#e0e0e0; } 50%,100% { fill:#667eea; stroke:#667eea; } }
                     @keyframes bx { 0%,30% { fill:#666; } 50%,100% { fill:white; } }
@@ -2850,7 +2851,7 @@
                 <text x="100" y="210" text-anchor="middle" font-size="11" fill="#333" font-weight="600">点【只读】→【批注】</text>
                 <text x="100" y="228" text-anchor="middle" font-size="10" fill="#667eea">切到批注模式</text>
             </svg>`,
-            "mobile-2": `<svg viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;">
+            "mobile-2": `<svg class="help-svg" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg">
                 <defs><style>
                     @keyframes tap { 0%,30% { r:0; opacity:0.5; } 60% { r:18; opacity:0; } 100% { r:18; opacity:0; } }
                     @keyframes card { 0%,40% { transform: translateY(80px); opacity:0; } 55%,100% { transform: translateY(0); opacity:1; } }
@@ -2869,7 +2870,7 @@
                     <text x="65" y="73" text-anchor="middle" font-size="10" fill="white" font-weight="600">💬 发表评论</text>
                 </g>
             </svg>`,
-            "mobile-3": `<svg viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;">
+            "mobile-3": `<svg class="help-svg" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg">
                 <rect x="20" y="30" width="160" height="200" rx="8" fill="white" stroke="#e0e0e0"/>
                 <text x="100" y="58" text-anchor="middle" font-size="12" fill="#1a1a1a" font-weight="700">feedback.md</text>
                 <line x1="35" y1="72" x2="165" y2="72" stroke="#f0f0f0"/>
