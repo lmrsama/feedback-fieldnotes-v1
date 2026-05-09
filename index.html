@@ -596,10 +596,14 @@
             #helpModal p, #helpModal li, #helpModal button { font-size: 14px !important; line-height: 1.75 !important; }
         }
 
-        /* view-switcher：整站居中顶部（桌面 + 手机都居中） */
-        .view-switcher { left: 50% !important; transform: translateX(-50%) !important; }
+
+        /* 引导弹窗：让 helpAnim 不超过合理高度，避免大屏上被撑空 */
+        #helpAnim { min-height: 240px !important; max-height: 380px !important; }
+        #helpModal > div { max-height: 640px !important; }
+
+        /* view-switcher：保留 reference.html 原模板默认（PC 左上角，body.mobile-view 才居中） */
         @media (max-width: 640px) {
-            .view-switcher { top: 10px !important; }
+            .view-switcher { top: 10px !important; left: 50% !important; transform: translateX(-50%) !important; }
             .view-switcher .view-btn { padding: 5px 10px !important; font-size: 11px !important; }
             #toggleCommentVisBtn, #helpBtn { transform: scale(0.92); transform-origin: top right; }
         }
