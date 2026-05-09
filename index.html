@@ -2940,23 +2940,34 @@
                 animArea.style.display = 'none';
                 stepsArea.style.width = '100%';
                 stepsArea.innerHTML = `
-                    <div style="padding:8px 6px;line-height:1.75;">
-                        <h2 style="font-size:19px;margin:0 0 6px;color:#1f2937;font-weight:700;">用户反馈 Field Notes</h2>
-                        <p style="font-size:12px;color:#999;margin:0 0 20px;">by 黎明睿 · 2026.05</p>
+                    <div style="padding:8px 6px;line-height:1.7;">
+                        <h2 style="font-size:18px;margin:0 0 4px;color:#1f2937;">HTML 汇报助手</h2>
+                        <p style="font-size:11px;color:#999;margin:0 0 14px;">by leomrli · 基于 GitHub 云端</p>
 
-                        <p style="font-size:14px;color:#444;margin:0 0 20px;line-height:1.75;">
-                            这是一份<b>可评论</b>的汇报——老板/同事打开就能在任意文字、数据、卡片上留言，作者一键导出所有反馈。
+                        <h3 style="font-size:13px;margin:0 0 6px;color:#1f2937;">🧩 是什么</h3>
+                        <p style="font-size:12px;color:#555;margin:0 0 12px;">
+                            把 Word / PPT / Markdown 方案转成 HTML，加上在线评论 + 多视图能力，一键部署到云端。生成一条链接发给老板/同事，打开就能看、能评。
                         </p>
 
-                        <div style="padding:14px 16px;background:#fafbff;border:1px solid #e8ebf5;border-radius:10px;margin-bottom:20px;">
-                            <div style="font-size:12px;color:#667eea;font-weight:600;margin-bottom:4px;">ℹ️ 本版本</div>
-                            <div style="font-size:13px;color:#555;line-height:1.7;">专注汇报与评论，不启用 AI 改稿功能。</div>
-                        </div>
+                        <h3 style="font-size:13px;margin:0 0 6px;color:#1f2937;">❗ 解决什么问题</h3>
+                        <p style="font-size:12px;color:#555;margin:0 0 12px;">
+                            以前看方案 → 截图批注 → 拉群讨论 → 回去改稿 → 再发 → 反复几轮。<br>
+                            现在打开链接直接在页面上评论，所有人看到的都是同一份最新版，反馈零成本、迭代秒级。
+                        </p>
 
-                        <div style="font-size:12px;color:#888;margin-bottom:10px;">按设备选操作指南：</div>
-                        <div style="display:flex;gap:10px;">
-                            <button onclick="switchHelpDevice('pc')" style="flex:1;padding:12px;background:#f0f4ff;border:1.5px solid #667eea;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:#667eea;white-space:nowrap;">💻 PC 端</button>
-                            <button onclick="switchHelpDevice('mobile')" style="flex:1;padding:12px;background:#f0fdf4;border:1.5px solid #10b981;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:#10b981;white-space:nowrap;">📱 手机端</button>
+                        <h3 style="font-size:13px;margin:0 0 6px;color:#1f2937;">⚡ 核心能力</h3>
+                        <ul style="font-size:12px;color:#555;padding-left:18px;margin:0 0 12px;line-height:1.8;">
+                            <li><b>颗粒度评论</b> — 点任意文字/图片/数据直接评；PC 支持 ⌘+click 多选 / 拖动框选跨元素批量评</li>
+                            <li><b>评论可筛选 · 可导出</b> — 方案 owner 一键导出全部反馈为 Markdown，丢给 WorkBuddy 批量返工</li>
+                            <li><b>PC / 手机双视图</b> — 同链接自适应，能力一致（手机唯一区别：不支持拖动框选）</li>
+                            <li><b>零安装</b> — 浏览器打开链接就能用，不装 App、不登录</li>
+                        </ul>
+
+                        <h3 style="font-size:13px;margin:0 0 8px;color:#1f2937;">🚀 怎么用</h3>
+                        <p style="font-size:12px;color:#555;margin:0 0 10px;">按当前设备查看操作指南：</p>
+                        <div style="display:flex;gap:12px;">
+                            <button onclick="switchHelpDevice('pc')" style="flex:1;padding:12px;background:#f0f4ff;border:1.5px solid #667eea;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:#667eea;">💻 PC 端指南 →</button>
+                            <button onclick="switchHelpDevice('mobile')" style="flex:1;padding:12px;background:#f0fdf4;border:1.5px solid #10b981;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:#10b981;">📱 手机端指南 →</button>
                         </div>
                     </div>
                 `;
