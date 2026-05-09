@@ -1,0 +1,3439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>用户反馈 Field Notes · 汇报版 v1</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif; background: #fff; padding: 32px 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { font-size: 20px; font-weight: 600; color: #1a1a1a; text-align: center; margin-bottom: 4px; }
+        .subtitle { text-align: center; font-size: 12px; color: #888; margin-bottom: 32px; }
+
+        .flow-row { display: flex; align-items: flex-start; gap: 0; margin-bottom: 36px; }
+        .flow-node { flex: 1; position: relative; min-width: 0; }
+        .arrow-connector { width: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding-top: 100px; }
+        .arrow-connector svg { width: 24px; height: 14px; }
+
+        .zone-tag { display: inline-block; font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 4px; margin-bottom: 6px; }
+        .zone-tag.qb { background: #E6F1FB; color: #185FA5; }
+        .zone-tag.yb { background: #EAF3DE; color: #3B6D11; }
+        .node-title { font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 3px; }
+        .node-desc { font-size: 11px; color: #666; line-height: 1.5; margin-bottom: 8px; }
+        .node-volume { display: inline-block; background: #fff3e0; color: #e65100; font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 4px; margin-bottom: 10px; }
+
+        .screenshot-group { display: flex; gap: 8px; justify-content: center; }
+        .screenshot-item { text-align: center; }
+        .screenshot-item img { width: 130px; border-radius: 10px; border: 1.5px solid #e0e0e0; box-shadow: 0 3px 8px rgba(0,0,0,0.06); }
+        .screenshot-item .caption { font-size: 9px; color: #999; margin-top: 4px; }
+
+        /* Activity demo + ref side by side */
+        .yb-layout { display: flex; gap: 10px; align-items: flex-start; }
+        .activity-demo { flex: 1; min-width: 0; border-radius: 16px; overflow: hidden; border: 1.5px solid #e0e0e0; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+        .activity-demo .demo-header { height: 28px; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; }
+        .activity-demo .demo-header span { color: white; font-size: 10px; font-weight: 500; }
+        .activity-demo .demo-body { padding: 12px; }
+
+        .act-hero { background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 10px; padding: 12px; margin-bottom: 10px; position: relative; }
+        .act-hero .brand { font-size: 8px; color: rgba(255,255,255,0.7); margin-bottom: 2px; }
+        .act-hero .title { font-size: 13px; color: white; font-weight: 700; }
+        .act-hero .sub { font-size: 9px; color: rgba(255,255,255,0.7); }
+        .act-hero .countdown { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 8px; font-size: 8px; color: white; }
+
+        .stage-tabs { display: flex; gap: 4px; margin-bottom: 10px; }
+        .stage-tab { flex: 1; padding: 6px 2px; border-radius: 6px; text-align: center; cursor: pointer; border: 1.5px solid #e8e8e8; background: white; transition: all 0.15s; }
+        .stage-tab.active { border-color: #667eea; background: #f5f3ff; }
+        .stage-tab.completed { border-color: #4CAF50; background: #f1f8e9; }
+        .stage-tab.locked { border-color: #e8e8e8; background: #fafafa; opacity: 0.6; }
+        .stage-tab .tab-num { font-size: 10px; font-weight: 600; color: #667eea; }
+        .stage-tab.completed .tab-num { color: #4CAF50; }
+        .stage-tab.locked .tab-num { color: #ccc; }
+        .stage-tab .tab-label { font-size: 8px; color: #666; margin-top: 1px; }
+        .stage-tab.locked .tab-label { color: #ccc; }
+        .stage-tab .tab-reward { font-size: 7px; color: #ffa500; font-weight: 600; margin-top: 1px; }
+
+        .stage-content { display: none; }
+        .stage-content.active { display: block; }
+        .stage-content .stage-desc { font-size: 10px; color: #333; font-weight: 500; margin-bottom: 8px; padding: 6px 8px; background: #f8f8f8; border-radius: 6px; }
+        .stage-content .stage-desc .key { color: #667eea; font-weight: 600; }
+
+        .task-item { display: flex; align-items: center; padding: 7px 0; border-bottom: 1px solid #f5f5f5; }
+        .task-item:last-child { border-bottom: none; }
+        .task-icon { width: 26px; height: 26px; border-radius: 6px; background: #f5f7ff; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+        .task-info { flex: 1; margin-left: 8px; }
+        .task-name { font-size: 10px; font-weight: 500; color: #1a1a1a; }
+        .task-desc-mini { font-size: 8px; color: #999; }
+        .task-btn { padding: 3px 10px; border-radius: 10px; font-size: 9px; font-weight: 600; border: none; cursor: pointer; }
+        .task-btn.go { background: #667eea; color: white; }
+        .task-btn.done { background: #e8f5e9; color: #4CAF50; }
+
+        .locked-state { text-align: center; padding: 20px 8px; }
+        .locked-state .lock-icon { font-size: 24px; margin-bottom: 4px; opacity: 0.4; }
+        .locked-state .lock-text { font-size: 10px; color: #999; }
+
+        .ref-box { flex-shrink: 0; width: 160px; }
+        .ref-box .ref-label { font-size: 8px; color: #999; margin-bottom: 4px; text-align: center; line-height: 1.3; }
+        .ref-box img { width: 100%; border-radius: 10px; border: 1px solid #e0e0e0; }
+
+        /* Settlement */
+        .settle-card { padding: 14px; background: #fffbe6; border-radius: 10px; border: 2px solid #ffd666; position: relative; margin-top: 8px; }
+        .settle-card .badge { position: absolute; top: -9px; left: 10px; background: #fff1b8; border: 1px solid #ffc53d; color: #874d00; font-size: 8px; font-weight: 500; padding: 2px 6px; border-radius: 3px; }
+        .settle-card .settle-title { font-size: 9px; color: #874d00; margin-bottom: 6px; margin-top: 4px; }
+        .settle-row { display: flex; align-items: center; margin-bottom: 6px; }
+        .settle-row .dot { width: 6px; height: 6px; border-radius: 50%; margin-right: 6px; flex-shrink: 0; }
+        .settle-row .text { font-size: 10px; color: #333; }
+        .settle-total { border-top: 1px solid #ffd666; padding-top: 6px; margin-top: 4px; }
+        .settle-total .main { font-size: 11px; font-weight: 600; color: #1a1a1a; }
+        .settle-total .sub { font-size: 8px; color: #999; margin-top: 1px; }
+
+        /* Detail table */
+        .detail-section { margin-top: 36px; padding: 20px; background: #fafafa; border-radius: 12px; border: 1px solid #e8e8e8; max-width: 860px; margin-left: auto; margin-right: auto; }
+        .detail-section h3 { font-size: 13px; font-weight: 600; margin-bottom: 12px; }
+        .detail-table { width: 100%; border-collapse: collapse; }
+        .detail-table th { text-align: left; font-size: 10px; color: #999; font-weight: 500; padding: 6px 10px; border-bottom: 1px solid #e8e8e8; }
+        .detail-table td { font-size: 11px; color: #333; padding: 8px 10px; border-bottom: 1px solid #f0f0f0; }
+        .detail-table .hl { color: #185FA5; font-weight: 600; }
+        .detail-table .sum td { font-weight: 600; border-top: 2px solid #e0e0e0; }
+        .placeholder-note { margin-top: 10px; padding: 8px 12px; background: #f0f0f0; border-radius: 6px; font-size: 10px; color: #666; line-height: 1.6; }
+        .placeholder-note code { background: #fff3cd; padding: 1px 3px; border-radius: 2px; font-family: monospace; color: #874d00; font-size: 9px; }
+
+        /* Commentable: 模块本身只是容器，评论入口是右下角💬+子元素点击 */
+        .commentable { position: relative; border-radius: 8px; }
+
+        /* 子粒度评论目标：默认无视觉，hover才描蓝 */
+        .commentable-text, .commentable-image, .commentable-data { position: relative; cursor: pointer; transition: outline 0.12s, background 0.12s; }
+        .commentable-text:hover, .commentable-image:hover, .commentable-data:hover {
+            outline: 1.5px dashed #667eea; outline-offset: 2px;
+        }
+        /* 子元素有评论时左上角小角标 */
+        .target-flag {
+            position: absolute; top: -6px; left: -6px;
+            min-width: 14px; height: 14px; padding: 0 4px;
+            background: #667eea; color: white;
+            font-size: 9px; font-weight: 600;
+            border-radius: 7px; display: flex; align-items: center; justify-content: center;
+            z-index: 6; pointer-events: none; line-height: 1;
+        }
+        body:not(.show-comments) .target-flag { display: none; }
+        /* 展示评论态：有评论的元素 hover 时实线高亮，提示可点查看 */
+        body.show-comments [data-target-id].has-comments:hover { outline: 2px solid #667eea !important; outline-offset: 2px; cursor: pointer; }
+        body.show-comments .commentable[data-section].has-comments { cursor: pointer; }
+
+        /* 多选态：被选元素持续高亮 */
+        .selected-target {
+            outline: 2px solid #667eea !important; outline-offset: 2px;
+            background: rgba(102,126,234,0.06) !important;
+        }
+        body.selection-mode .commentable-text:hover,
+        body.selection-mode .commentable-image:hover,
+        body.selection-mode .commentable-data:hover {
+            outline: 2px dashed #667eea; outline-offset: 2px;
+        }
+
+        /* 框选矩形（按 ⌘+拖拽 触发） */
+        #marqueeBox {
+            position: absolute;
+            border: 1.5px solid #667eea;
+            background: rgba(102,126,234,0.08);
+            pointer-events: none;
+            z-index: 1099;
+            display: none;
+        }
+        /* 拖拽时禁用文本选中，避免视觉干扰 */
+        body.marquee-dragging, body.marquee-dragging * {
+            user-select: none !important;
+            -webkit-user-select: none !important;
+        }
+
+        /* 新手引导浮层：步骤激活态 */
+        .help-step:hover { border-color: #c0c8ee !important; }
+        .help-step.active { border-color: #667eea !important; background: #f0f4ff !important; }
+        .help-step.active span:first-child { background: #667eea !important; }
+
+        /* SVG 动画：每个步骤的演示 */
+        .help-svg { width: 100%; height: 320px; max-width: 360px; }
+        .help-svg .demo-cursor { transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .help-svg .demo-elem { transition: all 0.4s; }
+        .help-svg .demo-panel { transition: opacity 0.5s, transform 0.5s; }
+
+        /* Comment panel */
+        .comment-panel { position: fixed; right: 0; top: 0; width: 300px; height: 100vh; background: white; box-shadow: -4px 0 20px rgba(0,0,0,0.1); z-index: 1000; transform: translateX(100%); transition: transform 0.2s; display: flex; flex-direction: column; }
+        .comment-panel.open { transform: translateX(0); }
+        .panel-header { padding: 14px 16px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .panel-header h3 { font-size: 13px; font-weight: 600; color: #333; }
+        .panel-close { width: 24px; height: 24px; border-radius: 50%; border: none; background: #f0f0f0; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+        .panel-body { flex: 1; overflow-y: auto; padding: 12px 16px; }
+        .panel-footer { padding: 10px 16px; border-top: 1px solid #eee; }
+        .panel-footer textarea { width: 100%; height: 50px; border: 1px solid #e0e0e0; border-radius: 6px; padding: 8px; font-size: 12px; resize: none; font-family: inherit; }
+        .panel-footer textarea:focus { outline: none; border-color: #667eea; }
+        .panel-footer button { margin-top: 6px; width: 100%; padding: 7px; background: #667eea; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; }
+
+        .export-btn { position: fixed; top: 16px; right: 16px; padding: 8px 16px; background: #333; color: white; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; z-index: 999; }
+        .export-btn:hover { background: #555; }
+        .clear-btn { position: fixed; top: 16px; right: 130px; padding: 8px 16px; background: #f0f0f0; color: #666; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; z-index: 999; }
+
+        .view-switcher { position: fixed; top: 16px; left: 16px; display: flex; gap: 0; background: #f0f0f0; border-radius: 8px; padding: 3px; z-index: 999; }
+
+        .view-btn { padding: 6px 14px; border: none; background: transparent; cursor: pointer; font-size: 12px; color: #666; border-radius: 6px; transition: all 0.15s; }
+        .view-btn.active { background: white; color: #333; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+        /* 评论面板内的 Tab */
+        .panel-tab.active { color: #333 !important; font-weight: 600 !important; border-bottom-color: #667eea !important; }
+
+        /* 全局评论FAB：有评论时加红点 */
+        #globalCommentFab.has-comments::after { content: none; }
+        #globalCommentFab:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(102,126,234,0.5); }
+
+        body.mobile-view .container { max-width: 420px; padding: 0 10px; }
+        body.mobile-view .flow-row { flex-direction: column; gap: 20px; }
+        body.mobile-view .flow-node { width: 100% !important; flex: unset !important; }
+        body.mobile-view .arrow-connector { width: 100%; height: 24px; padding: 0; }
+        body.mobile-view .arrow-connector svg { transform: rotate(90deg); }
+        body.mobile-view .screenshot-group { justify-content: center; }
+        body.mobile-view .yb-layout { flex-direction: column; align-items: center; gap: 16px; }
+        body.mobile-view .ref-box { width: 100%; max-width: 240px; }
+        body.mobile-view .activity-demo { max-width: 280px; }
+        body.mobile-view .detail-section { max-width: 100%; }
+        body.mobile-view .detail-table { font-size: 10px; }
+        body.mobile-view .detail-table th, body.mobile-view .detail-table td { padding: 6px 6px; font-size: 10px; }
+        body.mobile-view h1 { font-size: 18px; }
+        body.mobile-view .subtitle { font-size: 11px; margin-bottom: 24px; }
+        body.mobile-view { padding-top: 60px; }
+        body.mobile-view .view-switcher { top: 10px; left: 50%; transform: translateX(-50%); }
+        body.mobile-view .export-btn { top: 56px; right: 10px; padding: 5px 10px; font-size: 10px; }
+        body.mobile-view .clear-btn { top: 56px; right: 90px; padding: 5px 10px; font-size: 10px; }
+
+        /* ===== 手机视图：评论面板改成底部抽屉 ===== */
+        body.mobile-view .comment-panel {
+            top: auto !important;
+            bottom: 0;
+            left: 0; right: 0;
+            width: 100% !important;
+            /* 用 --vh 这个 JS 同步的真实视口高度，避免 Chrome 底 bar 收起/展开时高度跳变；
+               浏览器支持 dvh 时也回退到 dvh */
+            height: calc(var(--vh, 1vh) * 50);
+            max-height: calc(var(--vh, 1vh) * 92);
+            transform: translateY(100%);
+            transition: transform 0.25s, height 0.25s;
+            border-radius: 14px 14px 0 0;
+            box-shadow: 0 -6px 20px rgba(0,0,0,0.15);
+            resize: vertical; /* 用户能上拉 */
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+        body.mobile-view .comment-panel.open { transform: translateY(0); }
+        body.mobile-view .comment-panel.expanded { height: calc(var(--vh, 1vh) * 92); }
+        /* 抽屉顶部的拖拽把手 */
+        body.mobile-view .comment-panel::before {
+            content: '';
+            position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
+            width: 36px; height: 4px; border-radius: 2px;
+            background: #ddd;
+            cursor: grab;
+        }
+        body.mobile-view .panel-header { padding-top: 18px; }
+        /* 主页面给底部留空间，避免内容被抽屉遮住 */
+        body.mobile-view.panel-open .container { padding-bottom: calc(var(--vh, 1vh) * 52); }
+        body.mobile-view.panel-open.panel-expanded .container { padding-bottom: calc(var(--vh, 1vh) * 92); }
+
+        /* ===== 手机视图：选中态的圆形标记 ===== */
+        body.mobile-view .selected-target {
+            outline: 2px solid #667eea !important;
+            outline-offset: 2px;
+            background: rgba(102,126,234,0.06) !important;
+        }
+        body.mobile-view .selected-target::before {
+            content: '✓';
+            position: absolute;
+            top: -8px; left: -8px;
+            width: 18px; height: 18px;
+            background: #667eea; color: white;
+            font-size: 11px; font-weight: 700;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 12;
+            box-shadow: 0 2px 6px rgba(102,126,234,0.4);
+        }
+        /* 手机视图下，评论可见态再点元素，提示可点 */
+        body.mobile-view.show-comments .commentable-text:active,
+        body.mobile-view.show-comments .commentable-image:active,
+        body.mobile-view.show-comments .commentable-data:active { outline: 2px solid #667eea; outline-offset: 2px; }
+
+        /* ===== v2.11 选中后的浮动小工具栏（腾讯视频式气泡）===== */
+        #bubbleToolbar {
+            position: absolute; display: none;
+            background: #1f2937; color: white;
+            border-radius: 8px; padding: 4px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            z-index: 1200; gap: 2px;
+            font-size: 12px; line-height: 1;
+            white-space: nowrap;
+            animation: bubblePop 0.18s ease-out;
+        }
+        #bubbleToolbar.show { display: inline-flex; }
+        @keyframes bubblePop {
+            from { opacity: 0; transform: translateY(-4px) scale(0.92); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        #bubbleToolbar button {
+            border: none; background: transparent; color: white;
+            padding: 7px 12px; cursor: pointer; border-radius: 5px;
+            font-size: 12px; font-weight: 500; line-height: 1;
+            display: inline-flex; align-items: center; gap: 4px;
+            transition: background 0.15s;
+        }
+        #bubbleToolbar button:hover { background: rgba(255,255,255,0.15); }
+        #bubbleToolbar .bubble-divider {
+            width: 1px; background: rgba(255,255,255,0.18); margin: 4px 0;
+        }
+        /* 小箭头 */
+        #bubbleToolbar::after {
+            content: ''; position: absolute;
+            bottom: -5px; left: 18px;
+            width: 10px; height: 10px;
+            background: #1f2937; transform: rotate(45deg);
+            z-index: -1;
+        }
+
+        /* ===== v2.11 inline 输入气泡 ===== */
+        #bubbleInput {
+            position: absolute; display: none;
+            background: white;
+            border: 1.5px solid #667eea;
+            border-radius: 10px; padding: 8px;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+            z-index: 1201;
+            width: 320px; max-width: 90vw;
+            animation: bubblePop 0.2s ease-out;
+        }
+        #bubbleInput.show { display: block; }
+        #bubbleInput .bi-head {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 11px; font-weight: 600; color: #555;
+        }
+        #bubbleInput .bi-head .bi-mode {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 2px 8px; border-radius: 10px;
+            background: #eef2ff; color: #4f46e5;
+        }
+        #bubbleInput textarea {
+            width: 100%; min-height: 56px; max-height: 140px;
+            border: 1px solid #e5e7eb; border-radius: 6px;
+            padding: 7px 9px; font-size: 12px; line-height: 1.5;
+            resize: none; box-sizing: border-box;
+            font-family: inherit; outline: none;
+            transition: border-color 0.15s;
+        }
+        #bubbleInput textarea:focus { border-color: #667eea; }
+        #bubbleInput .bi-foot {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 6px; gap: 6px;
+        }
+        #bubbleInput .bi-tip { font-size: 10px; color: #999; }
+        #bubbleInput .bi-actions { display: inline-flex; gap: 6px; }
+        #bubbleInput button {
+            border: none; cursor: pointer; padding: 6px 12px;
+            border-radius: 5px; font-size: 12px; font-weight: 600;
+            transition: opacity 0.15s;
+        }
+        #bubbleInput button.bi-cancel { background: #f3f4f6; color: #555; }
+        #bubbleInput button.bi-send { background: #667eea; color: white; }
+        #bubbleInput button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* ===== v2.11 顶部 toast ===== */
+        #topToast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px);
+            background: #1f2937; color: white;
+            padding: 11px 18px; border-radius: 8px;
+            font-size: 13px; font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            z-index: 99999; opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s, transform 0.25s;
+            max-width: 92vw;
+        }
+        #topToast.show {
+            opacity: 1; transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+        #topToast a {
+            color: #93c5fd; text-decoration: underline; cursor: pointer;
+            font-weight: 600;
+        }
+        #topToast a:hover { color: #bfdbfe; }
+
+        /* 手机端：小气泡和 inline 输入照常浮，但要避开底部抽屉 */
+        body.mobile-view #bubbleInput { width: 280px; }
+
+        /* ===== v2.11.2 手机端评论卡片（底部抽屉） ===== */
+        #mobileCommentCard {
+            position: fixed; left: 0; right: 0; bottom: 0;
+            background: white; border-radius: 16px 16px 0 0;
+            box-shadow: 0 -8px 32px rgba(0,0,0,0.18);
+            z-index: 1300;
+            max-height: calc(var(--vh, 1vh) * 70);
+            display: flex; flex-direction: column;
+            transform: translateY(100%);
+            transition: transform 0.25s ease-out;
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+        #mobileCommentCard.show { transform: translateY(0); }
+        #mobileCommentCard .mcc-head {
+            padding: 14px 16px 10px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 10px;
+        }
+        #mobileCommentCard .mcc-title {
+            font-size: 13px; font-weight: 600; color: #333;
+            flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        #mobileCommentCard .mcc-close {
+            border: none; background: #f3f4f6;
+            width: 28px; height: 28px; border-radius: 50%;
+            font-size: 16px; color: #666; cursor: pointer;
+            line-height: 1;
+        }
+        #mobileCommentCard .mcc-list {
+            flex: 1; overflow-y: auto;
+            padding: 10px 16px;
+            min-height: 80px;
+            max-height: calc(var(--vh, 1vh) * 30);
+            background: #fafafa;
+        }
+        #mobileCommentCard .mcc-empty {
+            text-align: center; color: #999; font-size: 12px;
+            padding: 20px 0;
+        }
+        #mobileCommentCard .mcc-item {
+            background: white; border-radius: 8px;
+            padding: 9px 12px; margin-bottom: 8px;
+            font-size: 12px; line-height: 1.5;
+            border: 1px solid #eee;
+        }
+        #mobileCommentCard .mcc-item .mcc-meta {
+            font-size: 10px; color: #999; margin-top: 4px;
+            display: flex; justify-content: space-between;
+        }
+        #mobileCommentCard .mcc-item .mcc-badge {
+            display: inline-block; font-size: 9px;
+            padding: 1px 6px; border-radius: 3px;
+            margin-left: 6px;
+        }
+        #mobileCommentCard .mcc-item.ai .mcc-badge {
+            background: #667eea; color: white;
+        }
+        #mobileCommentCard .mcc-foot {
+            padding: 10px 14px 14px;
+            border-top: 1px solid #f0f0f0;
+            background: white;
+        }
+        #mobileCommentCard textarea {
+            width: 100%; min-height: 56px; max-height: 100px;
+            border: 1px solid #e5e7eb; border-radius: 8px;
+            padding: 8px 10px; font-size: 13px; line-height: 1.5;
+            resize: none; box-sizing: border-box; outline: none;
+            font-family: inherit;
+        }
+        #mobileCommentCard textarea:focus { border-color: #667eea; }
+        #mobileCommentCard .mcc-actions {
+            display: flex; gap: 8px; margin-top: 8px;
+        }
+        #mobileCommentCard .mcc-actions button {
+            flex: 1; padding: 9px;
+            border: none; border-radius: 8px;
+            font-size: 13px; font-weight: 600;
+            cursor: pointer;
+        }
+        #mobileCommentCard .mcc-btn-comment {
+            background: #667eea; color: white;
+        }
+        #mobileCommentCard .mcc-btn-ai {
+            background: #fef3c7; color: #b45309;
+        }
+        #mobileCommentCard .mcc-btn-comment:disabled,
+        #mobileCommentCard .mcc-btn-ai:disabled { opacity: 0.5; cursor: not-allowed; }
+        #mobileCommentCard .mcc-tip {
+            font-size: 10px; color: #999;
+            margin-top: 6px; text-align: center;
+        }
+        /* 当卡片打开时，给页面留 footer 空间 */
+        body.mobile-view.mobile-card-open .container { padding-bottom: calc(var(--vh, 1vh) * 70); }
+    
+        /* ========== Feedback Report 新增样式 ========== */
+        .lede { max-width: 820px; margin: 0 auto 28px; padding: 12px 16px; font-size: 13px; line-height: 1.75; color: #555; text-align: center; border-left: 3px solid #667eea; background: #f8f9ff; border-radius: 0 6px 6px 0; }
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 24px auto 36px; max-width: 820px; }
+        .stat { padding: 18px 14px; background: #fafbff; border: 1px solid #e8ebf5; border-radius: 10px; text-align: center; transition: transform .2s, box-shadow .2s; }
+        .stat:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -10px rgba(102,126,234,0.25); }
+        .stat .k { font-size: 32px; font-weight: 700; color: #1a1a1a; line-height: 1; letter-spacing: -0.02em; }
+        .stat .k em { font-style: normal; color: #667eea; }
+        .stat .l { margin-top: 8px; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #888; font-weight: 500; }
+        .stat .d { margin-top: 4px; font-size: 11px; color: #666; }
+
+        .chapter-head { display: flex; align-items: baseline; gap: 12px; margin: 48px 0 20px; max-width: 1000px; margin-left: auto; margin-right: auto; }
+        .chapter-head .idx { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.18em; color: #667eea; font-weight: 500; }
+        .chapter-head h2 { font-size: 18px; font-weight: 600; color: #1a1a1a; letter-spacing: -0.01em; }
+        .chapter-head .rule { flex: 1; height: 1px; background: #e8e8e8; margin-left: 8px; }
+
+        .themes-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; max-width: 1100px; margin: 0 auto; }
+        .theme-card { background: #fff; border: 1px solid #e8ebf5; border-radius: 10px; padding: 18px 20px; position: relative; transition: all .25s; grid-column: span 12; }
+        .theme-card:hover { transform: translateY(-2px); box-shadow: 0 10px 24px -12px rgba(102,126,234,0.22); border-color: #c9d1f5; }
+        .theme-card.hero { grid-column: span 7; background: linear-gradient(135deg, #f5f3ff 0%, #eef2ff 100%); border-color: #d4d9f7; }
+        .theme-card.sub { grid-column: span 5; }
+        .theme-card.row { grid-column: span 4; }
+        .theme-card .rank { position: absolute; top: 10px; right: 18px; font-size: 44px; font-weight: 700; color: rgba(102,126,234,0.2); line-height: 1; letter-spacing: -0.04em; }
+        .theme-card .tag { display: inline-block; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: #888; font-weight: 500; margin-bottom: 6px; }
+        .theme-card h3 { font-size: 15px; font-weight: 600; color: #1a1a1a; margin: 2px 0 8px; padding-right: 60px; letter-spacing: -0.005em; }
+        .theme-card p { font-size: 12px; color: #555; line-height: 1.65; }
+        .theme-card .bar { margin-top: 12px; height: 4px; background: #eef0f7; border-radius: 2px; overflow: hidden; }
+        .theme-card .bar i { display: block; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 2px; }
+        .theme-card .count { margin-top: 6px; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #888; display: flex; justify-content: space-between; letter-spacing: 0.08em; }
+        @media (max-width: 860px) { .theme-card.hero, .theme-card.sub, .theme-card.row { grid-column: span 12; } }
+
+        .filters-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px auto 18px; max-width: 1100px; }
+        .chip { font-size: 11px; padding: 6px 11px; border-radius: 999px; border: 1px solid #e0e4ef; background: #fff; color: #666; cursor: pointer; transition: all .18s; letter-spacing: 0.04em; user-select: none; }
+        .chip:hover { border-color: #c9d1f5; color: #667eea; }
+        .chip.on { background: #667eea; color: #fff; border-color: #667eea; }
+        .chip .n { opacity: 0.6; margin-left: 4px; font-size: 10px; }
+
+        .notes-wall { columns: 3 300px; column-gap: 14px; max-width: 1100px; margin: 0 auto; }
+        @media (max-width: 720px) { .notes-wall { columns: 1; } }
+        .note { break-inside: avoid; margin: 0 0 12px; padding: 14px 16px 15px; font-size: 13px; line-height: 1.55; color: #1a1a1a; border-radius: 8px; border: 1px solid #e8ebf5; background: #fff; transition: all .2s; position: relative; }
+        .note:hover { transform: translateY(-1px); box-shadow: 0 6px 14px -6px rgba(0,0,0,0.08); border-color: #c9d1f5; }
+        .note.browser { background: #f0f5fc; border-color: #d4e2f5; }
+        .note.skill { background: #f3f0fc; border-color: #d9d1f2; }
+        .note.work { background: #eef8f0; border-color: #c9e5cf; }
+        .note.ai { background: #fff7e6; border-color: #f5d78e; }
+        .note.ux { background: #fef0f0; border-color: #f5c6c6; }
+        .note .cat { display: inline-block; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: #666; font-weight: 600; margin-bottom: 4px; }
+
+        .insights-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 1100px; margin: 0 auto; }
+        @media (max-width: 860px) { .insights-grid { grid-template-columns: 1fr; } }
+        .insight { background: linear-gradient(135deg, #fafbff 0%, #f5f7fe 100%); border: 1px solid #e8ebf5; border-radius: 10px; padding: 20px 22px 22px; position: relative; transition: all .25s; }
+        .insight:hover { transform: translateY(-2px); box-shadow: 0 12px 26px -14px rgba(102,126,234,0.25); }
+        .insight::before { content: "\201C"; position: absolute; top: -4px; left: 14px; font-size: 50px; font-weight: 700; color: rgba(102,126,234,0.25); line-height: 1; font-family: Georgia, serif; }
+        .insight h4 { font-size: 14px; font-weight: 600; color: #1a1a1a; margin: 22px 0 8px; padding-right: 10px; letter-spacing: -0.005em; }
+        .insight p { font-size: 12px; color: #555; line-height: 1.75; }
+
+        .actions-list { max-width: 1000px; margin: 0 auto; border: 1px solid #e8ebf5; border-radius: 10px; overflow: hidden; background: #fff; }
+        .action-row { display: grid; grid-template-columns: 60px 120px 1fr 80px; gap: 16px; padding: 14px 18px; border-bottom: 1px solid #f0f0f0; align-items: center; transition: background .15s; }
+        .action-row:last-child { border-bottom: none; }
+        .action-row:hover { background: #fafbff; }
+        .action-row .act-idx { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #888; font-weight: 500; letter-spacing: 0.05em; }
+        .action-row .act-tag { display: inline-block; font-size: 10px; padding: 3px 9px; border-radius: 4px; font-weight: 500; text-align: center; }
+        .action-row .act-tag.cap { background: #E6F1FB; color: #185FA5; }
+        .action-row .act-tag.skl { background: #EAF3DE; color: #3B6D11; }
+        .action-row .act-tag.wf  { background: #FFF3E0; color: #874D00; }
+        .action-row .act-tag.vrt { background: #F5E6FF; color: #5B2B85; }
+        .action-row .act-tag.ux  { background: #FFEBEE; color: #8B2B2B; }
+        .action-row .act-title { font-size: 13px; font-weight: 600; color: #1a1a1a; margin-bottom: 3px; }
+        .action-row .act-desc { font-size: 11px; color: #666; line-height: 1.55; }
+        .action-row .act-weight { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; color: #667eea; text-align: right; letter-spacing: 0.04em; }
+        @media (max-width: 720px) { .action-row { grid-template-columns: 1fr; gap: 6px; } .action-row .act-weight { text-align: left; } }
+
+    </style>
+</head>
+<body>
+    <div class="view-switcher">
+        <button class="view-btn active" data-view="pc" onclick="setView('pc')">PC视图</button>
+        <button class="view-btn" data-view="mobile" onclick="setView('mobile')">手机视图</button>
+    </div>
+
+    <!-- Comment panel -->
+    <div class="comment-panel" id="commentPanel">
+        <div class="panel-header">
+            <h3 id="panelTitle">评论</h3>
+            <button class="panel-close" onclick="closePanel()">×</button>
+        </div>
+        <!-- Tab 切换 -->
+        <div id="panelTabs" style="display:flex;border-bottom:1px solid #eee;background:#fafafa;">
+            <button class="panel-tab active" data-tab="comment" onclick="switchPanelTab('comment')" style="flex:1;padding:10px;border:none;background:transparent;font-size:12px;cursor:pointer;color:#333;font-weight:600;border-bottom:2px solid transparent;">💬 评论</button>
+            <button class="panel-tab" data-tab="ai" onclick="switchPanelTab('ai')" style="flex:1;padding:10px;border:none;background:transparent;font-size:12px;cursor:pointer;color:#888;font-weight:500;border-bottom:2px solid transparent;">⚡ AI 修改</button>
+        </div>
+        <!-- 评论Tab的子工具栏：批量、导出 -->
+        <div id="commentSubToolbar" style="padding:6px 12px;background:#fafafa;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center;font-size:11px;">
+            <button id="batchToggleBtn" onclick="toggleBatchMode()" style="font-size:11px;padding:3px 8px;background:#f0f0f0;border:none;border-radius:4px;cursor:pointer;color:#666;">批量</button>
+            <button onclick="exportAllComments()" title="导出所有评论为Markdown" style="font-size:11px;padding:3px 8px;background:#f0f0f0;border:none;border-radius:4px;cursor:pointer;color:#666;">📤 导出全部</button>
+        </div>
+        <!-- AI Tab的子工具栏：版本历史 -->
+        <div id="aiSubToolbar" style="display:none;padding:6px 12px;background:#fafafa;border-bottom:1px solid #f0f0f0;font-size:11px;">
+            <button onclick="openVersions()" style="font-size:11px;padding:3px 8px;background:#f0f0f0;border:none;border-radius:4px;cursor:pointer;color:#666;">📜 版本历史</button>
+        </div>
+        <div id="batchToolbar" style="display:none;padding:8px 14px;background:#f5f5f5;border-bottom:1px solid #eee;font-size:11px;color:#666;align-items:center;justify-content:space-between;">
+            <span><label style="cursor:pointer;"><input type="checkbox" id="batchSelectAll" onchange="toggleSelectAll(this.checked)" style="vertical-align:middle;"> <span id="batchCountLabel">已选 0 项</span></label></span>
+            <span style="display:flex;gap:6px;">
+                <button onclick="batchExport()" style="font-size:11px;padding:3px 8px;background:#667eea;color:white;border:none;border-radius:3px;cursor:pointer;">导出</button>
+                <button onclick="batchDelete()" style="font-size:11px;padding:3px 8px;background:#ff4d4f;color:white;border:none;border-radius:3px;cursor:pointer;">删除</button>
+            </span>
+        </div>
+        <div class="panel-body" id="panelBody"></div>
+        <div class="panel-footer">
+            <textarea id="commentInput" placeholder="输入评论..."></textarea>
+            <button id="panelSendBtn" onclick="panelSend()" style="margin-top:6px;width:100%;padding:8px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">发送</button>
+            <div style="margin-top:6px;font-size:10px;color:#999;line-height:1.5;" id="commentFooterHint">评论留言不修改页面</div>
+        </div>
+    </div>
+
+    <!-- Version history modal -->
+    <div id="versionModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1500;align-items:center;justify-content:center;">
+        <div style="background:white;border-radius:12px;width:480px;max-height:70vh;overflow:hidden;display:flex;flex-direction:column;">
+            <div style="padding:14px 18px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;">
+                <h3 style="font-size:14px;font-weight:600;margin:0;">版本历史</h3>
+                <button onclick="closeVersions()" style="border:none;background:#f0f0f0;width:24px;height:24px;border-radius:50%;cursor:pointer;">×</button>
+            </div>
+            <div id="versionList" style="flex:1;overflow-y:auto;padding:14px 18px;"></div>
+        </div>
+    </div>
+    <!-- 顶部右上：只保留评论可见性切换 -->
+    <div style="position:fixed;top:16px;right:16px;display:flex;gap:8px;z-index:999;align-items:center;">
+        <button id="toggleCommentVisBtn" onclick="toggleCommentVisibility()" style="padding:7px 12px;background:white;border:1.5px solid #e0e0e0;border-radius:6px;font-size:12px;color:#666;cursor:pointer;line-height:1.3;">批注</button>
+        <button id="helpBtn" onclick="openHelp()" title="新手引导" style="width:32px;height:32px;background:white;border:1.5px solid #e0e0e0;border-radius:50%;font-size:14px;color:#667eea;cursor:pointer;line-height:1;font-weight:600;display:flex;align-items:center;justify-content:center;">?</button>
+    </div>
+
+    <!-- 框选矩形（⌘+拖拽 时显示） -->
+    <div id="marqueeBox"></div>
+
+    <!-- 新手引导浮层 -->
+    <div id="helpModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(3px);">
+        <div style="background:white;border-radius:14px;width:760px;max-width:94vw;max-height:88vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 16px 48px rgba(0,0,0,0.25);">
+            <!-- header -->
+            <div style="padding:18px 22px 0;border-bottom:1px solid #f0f0f0;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                    <div>
+                        <div style="font-size:16px;font-weight:700;color:#333;">📖 新手引导</div>
+                        <div style="font-size:11px;color:#999;margin-top:3px;">先看「关于」了解工具 · 再看设备操作指南</div>
+                    </div>
+                    <button onclick="closeHelp()" style="border:none;background:#f0f0f0;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;color:#666;">×</button>
+                </div>
+                <!-- 设备 Tab -->
+                <div style="display:flex;gap:6px;">
+                    <button class="device-tab active" data-device="about" onclick="switchHelpDevice('about')" style="padding:6px 14px;border:none;background:#f0f4ff;color:#667eea;font-weight:600;border-radius:6px 6px 0 0;font-size:12px;cursor:pointer;border-bottom:2px solid #667eea;">🏠 关于</button>
+                    <button class="device-tab" data-device="pc" onclick="switchHelpDevice('pc')" style="padding:6px 14px;border:none;background:transparent;color:#999;border-radius:6px 6px 0 0;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;">💻 PC 端</button>
+                    <button class="device-tab" data-device="mobile" onclick="switchHelpDevice('mobile')" style="padding:6px 14px;border:none;background:transparent;color:#999;border-radius:6px 6px 0 0;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;">📱 手机端</button>
+                </div>
+            </div>
+            <!-- body：左动画区 + 右描述列表 -->
+            <div style="flex:1;display:flex;min-height:0;">
+                <!-- 左：动画演示 -->
+                <div id="helpAnim" style="width:55%;background:#f7f8fc;display:flex;align-items:center;justify-content:center;padding:20px;border-right:1px solid #f0f0f0;min-height:340px;">
+                    <!-- SVG 动画注入位置 -->
+                </div>
+                <!-- 右：步骤列表 -->
+                <div id="helpSteps" style="width:45%;padding:18px 20px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;">
+                    <!-- 步骤会按 device 动态注入 -->
+                </div>
+            </div>
+            <!-- footer -->
+            <div style="padding:12px 22px;border-top:1px solid #f0f0f0;background:#fafafa;display:flex;justify-content:space-between;align-items:center;">
+                <div style="font-size:11px;color:#999;">
+                    作者：<b style="color:#667eea;">your-name</b> · 联系方式（请替换）
+                </div>
+                <button onclick="closeHelp()" style="padding:8px 18px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">开始体验</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 右下角悬浮：评论入口 -->
+    <button id="globalCommentFab" onclick="openPanel({kind:'all'})" title="评论中心"
+        style="position:fixed;bottom:24px;right:24px;width:52px;height:52px;border-radius:50%;background:#667eea;color:white;border:none;font-size:22px;cursor:pointer;box-shadow:0 4px 16px rgba(102,126,234,0.4);z-index:998;display:flex;align-items:center;justify-content:center;transition:all 0.2s;">💬</button>
+
+    <!-- v2.11 浮动小工具栏 + inline 输入 + 顶部 toast -->
+    <div id="bubbleToolbar">
+        <button data-bubble-action="comment" title="写评论">💬 评论</button>
+        <span class="bubble-divider"></span>
+        <button data-bubble-action="ai" title="AI 实时修改">✨ AI 修改</button>
+    </div>
+    <div id="bubbleInput">
+        <div class="bi-head">
+            <span class="bi-mode" id="biModeLabel">💬 评论</span>
+            <span id="biScopeLabel" style="font-size:10px;color:#999;font-weight:500;">已选 0 项</span>
+        </div>
+        <textarea id="bubbleInputText" placeholder="输入内容..."></textarea>
+        <div class="bi-foot">
+            <span class="bi-tip" id="biTipText">点【发送】按钮提交</span>
+            <span class="bi-actions">
+                <button class="bi-cancel" data-bi-action="cancel">取消</button>
+                <button class="bi-send" id="biSendBtn" data-bi-action="send">发送</button>
+            </span>
+        </div>
+    </div>
+    <div id="topToast"></div>
+
+    <!-- v2.11.2 手机端评论卡片（底部抽屉） -->
+    <div id="mobileCommentCard">
+        <div class="mcc-head">
+            <span class="mcc-title" id="mccTitle">评论</span>
+            <button class="mcc-close" onclick="hideMobileCommentCard()">×</button>
+        </div>
+        <div class="mcc-list" id="mccList"></div>
+        <div class="mcc-foot">
+            <textarea id="mccInput" placeholder="输入评论或 AI 修改诉求..."></textarea>
+            <div class="mcc-actions">
+                <button class="mcc-btn-comment" id="mccBtnComment" onclick="submitMobileComment(false)">💬 发表评论</button>
+                <button class="mcc-btn-ai" id="mccBtnAI" onclick="submitMobileComment(true)">✨ AI 修改</button>
+            </div>
+            <div class="mcc-tip">评论留言不修改页面 · AI 修改会实时改 HTML</div>
+        </div>
+    </div>
+    <div class="container">
+        <h1>听见用户 · 便签上的期待</h1>
+        <p class="subtitle">Field Notes Vol.01 · 94 张手写便利贴解码 · 2026.04.27 内部版</p>
+
+        <!-- =========== 概览 =========== -->
+        <div class="commentable" data-section="overview">
+            <p class="lede">我们把散落在桌面上的 6 张现场照片、94 张手写便利贴逐一辨认、归类、聚合——以下是从字迹、词频与语气里读出的用户心声。本页作为汇报使用，可就地评论、可让 AI 当场改。</p>
+            <div class="stats-row">
+                <div class="stat">
+                    <div class="k">06</div>
+                    <div class="l">Photos</div>
+                    <div class="d">现场照片</div>
+                </div>
+                <div class="stat">
+                    <div class="k"><em>94</em></div>
+                    <div class="l">Sticky Notes</div>
+                    <div class="d">便利贴被解码</div>
+                </div>
+                <div class="stat">
+                    <div class="k">07</div>
+                    <div class="l">Key Themes</div>
+                    <div class="d">核心诉求主题</div>
+                </div>
+                <div class="stat">
+                    <div class="k"><em>38%</em></div>
+                    <div class="l">QB Related</div>
+                    <div class="d">直接指向浏览器</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =========== Top Themes =========== -->
+        <div class="chapter-head"><span class="idx">01 / CHAPTER</span><h2>需求热点 · Top 5 主题</h2><span class="rule"></span></div>
+        <div class="commentable" data-section="top-themes">
+            <div class="themes-grid">
+                <article class="theme-card hero">
+                    <span class="rank">01</span>
+                    <span class="tag">Highest Volume · 34/94</span>
+                    <h3>QQ浏览器 × Bot/Skill 深度融合</h3>
+                    <p>用户最强烈的期待——把浏览器作为办公、学习、娱乐的统一入口：写课题申报、总结视频、建知识库、看小说找文、阅读文献、电商侧边栏。"万物皆可在浏览器里发生。"</p>
+                    <div class="bar"><i style="width:92%"></i></div>
+                    <div class="count"><span>RELATED NOTES</span><span>34 / 94</span></div>
+                </article>
+                <article class="theme-card sub">
+                    <span class="rank">02</span>
+                    <span class="tag">Ranked · 19/94</span>
+                    <h3>Skill 生态建设</h3>
+                    <p>模板丰富度、示例完备度、创作工具链、识别智能化。社区要的是"更多样例 + 更低上手门槛"。</p>
+                    <div class="bar"><i style="width:74%"></i></div>
+                    <div class="count"><span>RELATED NOTES</span><span>19 / 94</span></div>
+                </article>
+                <article class="theme-card row">
+                    <span class="rank">03</span>
+                    <span class="tag">Ranked · 14/94</span>
+                    <h3>自动化工作流</h3>
+                    <p>日报 / 周报 / 纪要 / 汇报自动生成；自动抓取、整理、推送——减少重复劳动。</p>
+                    <div class="bar"><i style="width:62%"></i></div>
+                    <div class="count"><span>RELATED NOTES</span><span>14 / 94</span></div>
+                </article>
+                <article class="theme-card row">
+                    <span class="rank">04</span>
+                    <span class="tag">Ranked · 12/94</span>
+                    <h3>垂直场景深耕</h3>
+                    <p>电商分析、美股研判、财经投研、课题申报、教辅陪练——希望专业度进一步加深。</p>
+                    <div class="bar"><i style="width:55%"></i></div>
+                    <div class="count"><span>RELATED NOTES</span><span>12 / 94</span></div>
+                </article>
+                <article class="theme-card row">
+                    <span class="rank">05</span>
+                    <span class="tag">Ranked · 15/94</span>
+                    <h3>多端 & 体验细节</h3>
+                    <p>Mac 专属入口、多端一致、多语言、图像/语音质量、减少广告冗余——基础体验仍是门槛。</p>
+                    <div class="bar"><i style="width:48%"></i></div>
+                    <div class="count"><span>RELATED NOTES</span><span>15 / 94</span></div>
+                </article>
+            </div>
+        </div>
+
+        <!-- =========== Verbatim Wall =========== -->
+        <div class="chapter-head"><span class="idx">02 / CHAPTER</span><h2>便签原声 · Verbatim Wall</h2><span class="rule"></span></div>
+        <div class="commentable" data-section="verbatim">
+            <div class="filters-row" id="filtersRow">
+                <button class="chip on" data-f="all">全部<span class="n">32</span></button>
+                <button class="chip" data-f="browser">QQ Browser<span class="n">11</span></button>
+                <button class="chip" data-f="skill">Skill / Bot<span class="n">9</span></button>
+                <button class="chip" data-f="work">Work Flow<span class="n">6</span></button>
+                <button class="chip" data-f="ai">AI Capability<span class="n">4</span></button>
+                <button class="chip" data-f="ux">UX / Other<span class="n">4</span></button>
+            </div>
+            <div class="notes-wall" id="notesWall">
+                <div class="note browser" data-f="browser"><span class="cat">QQ Browser</span>用 QQ 浏览器辅助写课题申报</div>
+                <div class="note browser" data-f="browser"><span class="cat">QQ Browser</span>用 QQ 浏览器帮我总结视频内容，生成报告</div>
+                <div class="note browser" data-f="browser"><span class="cat">QQ Browser</span>看小说用 QBot 找心仪小说（文章主题 / 特点）</div>
+                <div class="note browser" data-f="browser"><span class="cat">QQ Browser</span>怎么在 QQ 浏览器建立知识库？</div>
+                <div class="note browser" data-f="browser"><span class="cat">QQ Browser</span>用浏览器做一些日常事项，像侧边栏一样和商城联动</div>
+                <div class="note browser" data-f="browser"><span class="cat">QQ Browser</span>希望能结合微博新闻</div>
+                <div class="note browser" data-f="browser"><span class="cat">QQ Browser</span>搜索并阅读文献</div>
+                <div class="note browser" data-f="browser"><span class="cat">QQ Browser</span>QQ 浏览器的信息汇总功能很好</div>
+                <div class="note browser" data-f="browser"><span class="cat">QQ Browser</span>观看视频时，能把内容下载到 APP，做课件参考</div>
+
+                <div class="note skill" data-f="skill"><span class="cat">Skill</span>优化 Skill 社区，提供更多示例与测试</div>
+                <div class="note skill" data-f="skill"><span class="cat">Skill</span>日报生成 Skill：抓财经新闻、判断情绪、生成投资简报</div>
+                <div class="note skill" data-f="skill"><span class="cat">Skill</span>给儿子做教辅 Skill，可以预习 / 打卡 / 错题</div>
+                <div class="note skill" data-f="skill"><span class="cat">Skill</span>用 QBot 做 Dribbble / Behance 每日热门抓取</div>
+                <div class="note skill" data-f="skill"><span class="cat">Skill</span>提升 Skill 智能识别 + 按个人喜好自动推荐</div>
+                <div class="note skill" data-f="skill"><span class="cat">Skill</span>刷网课：内容 → Skill，减少重复记录</div>
+                <div class="note skill" data-f="skill"><span class="cat">Skill</span>希望 Skill 列表分类更清晰一些</div>
+                <div class="note skill" data-f="skill"><span class="cat">Skill</span>希望有更多 AI 浏览器 Skill</div>
+
+                <div class="note work" data-f="work"><span class="cat">Workflow</span>帮我整理一个月内的周报，一键改写为日报</div>
+                <div class="note work" data-f="work"><span class="cat">Workflow</span>自动汇总当日工作（邮箱/记录/多集）生成汇报</div>
+                <div class="note work" data-f="work"><span class="cat">Workflow</span>用飞书妙记做会议纪要</div>
+                <div class="note work" data-f="work"><span class="cat">Workflow</span>生成企业财报 PPT · 给投资建议</div>
+                <div class="note work" data-f="work"><span class="cat">Workflow</span>结合 CRM，自动化操作 · 提效对外沟通</div>
+                <div class="note work" data-f="work"><span class="cat">Workflow</span>帮我规划一个 10 天的旅游攻略</div>
+
+                <div class="note ai" data-f="ai"><span class="cat">AI</span>STT / TTS · 生成演讲与英语老师 Skill</div>
+                <div class="note ai" data-f="ai"><span class="cat">AI</span>AI 底座接入更多模型（GPT-5 / Claude …）</div>
+                <div class="note ai" data-f="ai"><span class="cat">AI</span>希望 AI 主动推荐感兴趣的内容</div>
+                <div class="note ai" data-f="ai"><span class="cat">AI</span>图片生成可以更智能一些</div>
+
+                <div class="note ux" data-f="ux"><span class="cat">UX</span>减少广告与冗余推送</div>
+                <div class="note ux" data-f="ux"><span class="cat">UX</span>Mac 用户也很多，希望有专属入口</div>
+                <div class="note ux" data-f="ux"><span class="cat">UX</span>版图设计再简洁一点</div>
+                <div class="note ux" data-f="ux"><span class="cat">UX</span>支持多语言下拉 · 同步效率</div>
+            </div>
+        </div>
+
+        <!-- =========== Insights =========== -->
+        <div class="chapter-head"><span class="idx">03 / CHAPTER</span><h2>读后洞察 · Between the Lines</h2><span class="rule"></span></div>
+        <div class="commentable" data-section="insights">
+            <div class="insights-grid">
+                <article class="insight">
+                    <h4>浏览器正在被重新定义</h4>
+                    <p>用户不再把 QQ 浏览器当"访问工具"——而是把它视作一个可召唤 Agent、可长出 Skill、可沉淀知识的容器。把这件事讲清楚，比堆功能更重要。</p>
+                </article>
+                <article class="insight">
+                    <h4>Skill 痛点不在"多"，在"找得到 · 写得出"</h4>
+                    <p>示例库、模板、分类、创作引导——Skill 生态需要一个"编辑部"式的运营姿态，而不是单纯上架。</p>
+                </article>
+                <article class="insight">
+                    <h4>自动化是最低门槛的魔法时刻</h4>
+                    <p>日报、周报、纪要、汇报——用户期待的不是 AI 的"惊艳"，而是"把重复的事替我做掉"。这是留存的开关。</p>
+                </article>
+            </div>
+        </div>
+
+        <!-- =========== Action Items =========== -->
+        <div class="chapter-head"><span class="idx">04 / CHAPTER</span><h2>平台行动项 · Next Steps</h2><span class="rule"></span></div>
+        <div class="commentable" data-section="actions">
+            <div class="actions-list">
+                <div class="action-row">
+                    <span class="act-idx">A01</span>
+                    <span class="act-tag cap">容器定位</span>
+                    <div>
+                        <div class="act-title">把"浏览器=Agent/Skill/知识库容器"讲成产品主线</div>
+                        <div class="act-desc">首页叙事、开屏动画、Onboarding 统一指向这套定位，替换现有"更快更省流"类表达。</div>
+                    </div>
+                    <span class="act-weight">P0 · 34 票</span>
+                </div>
+                <div class="action-row">
+                    <span class="act-idx">A02</span>
+                    <span class="act-tag skl">Skill 编辑部</span>
+                    <div>
+                        <div class="act-title">Skill 示例库 + 模板商店 + 创作引导三件套</div>
+                        <div class="act-desc">不是一个市场入口，而是一个"有主编的内容位"：每周挑 Skill、专题策划、创作者榜单、官方教程。</div>
+                    </div>
+                    <span class="act-weight">P0 · 19 票</span>
+                </div>
+                <div class="action-row">
+                    <span class="act-idx">A03</span>
+                    <span class="act-tag wf">自动化工作流</span>
+                    <div>
+                        <div class="act-title">日报 / 周报 / 纪要 / 汇报 四件套官方 Skill</div>
+                        <div class="act-desc">作为"省时间"的认知锚点，不一定是技术最强，但一定是用户最先想到的功能。</div>
+                    </div>
+                    <span class="act-weight">P1 · 14 票</span>
+                </div>
+                <div class="action-row">
+                    <span class="act-idx">A04</span>
+                    <span class="act-tag vrt">垂直深耕</span>
+                    <div>
+                        <div class="act-title">优先打穿 2-3 个垂直场景（电商 / 财经 / 教辅）</div>
+                        <div class="act-desc">而不是在所有场景上都做到 70 分。垂直场景的数据和工作流专项接入、和头部生态方联合。</div>
+                    </div>
+                    <span class="act-weight">P1 · 12 票</span>
+                </div>
+                <div class="action-row">
+                    <span class="act-idx">A05</span>
+                    <span class="act-tag ux">多端 & 体验</span>
+                    <div>
+                        <div class="act-title">Mac 专属入口 + 多端登录态 + 广告减法</div>
+                        <div class="act-desc">这些都是"负分项"——不是亮点，但不做会被持续扣分，尤其是 Mac 用户的抱怨已经汇聚成信号。</div>
+                    </div>
+                    <span class="act-weight">P2 · 15 票</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 便签墙过滤
+        (function(){
+            const chips = document.querySelectorAll('#filtersRow .chip');
+            const notes = document.querySelectorAll('#notesWall .note');
+            chips.forEach(c => c.addEventListener('click', () => {
+                chips.forEach(x => x.classList.remove('on'));
+                c.classList.add('on');
+                const f = c.dataset.f;
+                notes.forEach(n => { n.style.display = (f === 'all' || n.dataset.f === f) ? '' : 'none'; });
+            }));
+        })();
+    </script>
+
+    <script>
+        // ========================================
+        // 配置区
+        // ========================================
+        const GIST_ID = '__GIST_ID__';
+        const GIST_FILENAME = 'comments.json';
+        const VERSIONS_FILENAME = 'versions.json';
+
+        const AI_ENDPOINT = 'https://api.deepseek.com/v1/chat/completions';
+        const AI_MODEL = 'deepseek-chat';
+
+        // 密钥不再硬编码：通过密码解锁内置的加密密钥块
+        // 部署脚本会把 HEk7kGz8Gaw+Jkj7XiUFSc0I/eSX64Ipk7X4BPEKMqriIoYmU6ikinv1pGKe8gxjkSDYVo21U4H/S8F6xKyTSiRKQIEseO1RXAOSpbE2H1RE/pen9ctpLkMapJ/bN5suHYKLTFKhaew1+6w6xmqvkPkKoxxh1eIhOw== 替换为实际加密数据
+        const ENCRYPTED_KEYS = 'HEk7kGz8Gaw+Jkj7XiUFSc0I/eSX64Ipk7X4BPEKMqriIoYmU6ikinv1pGKe8gxjkSDYVo21U4H/S8F6xKyTSiRKQIEseO1RXAOSpbE2H1RE/pen9ctpLkMapJ/bN5suHYKLTFKhaew1+6w6xmqvkPkKoxxh1eIhOw==';
+
+        let _cachedKeys = null;
+        async function ensureKeys() {
+            if (_cachedKeys) return _cachedKeys;
+            // 从localStorage读
+            try {
+                const saved = JSON.parse(atob(localStorage.getItem('_qbk') || ''));
+                if (saved.t && saved.a) { _cachedKeys = { token: saved.t, aiKey: saved.a }; return _cachedKeys; }
+            } catch(e) {}
+            return null; // 不主动弹窗，由调用方决定何时弹
+        }
+
+        async function unlockKeys() {
+            // 显式触发密码解锁
+            if (_cachedKeys) return _cachedKeys;
+            const fromStorage = await ensureKeys();
+            if (fromStorage) return fromStorage;
+
+            if (ENCRYPTED_KEYS === '__' + 'ENCRYPTED_KEYS__') {
+                console.warn('未配置加密密钥');
+                return null;
+            }
+            const pwd = prompt('使用 AI 修改需要密码（向页面作者索取）：');
+            if (!pwd) return null;
+            try {
+                const enc = new TextEncoder();
+                const pwdHash = await crypto.subtle.digest('SHA-256', enc.encode(pwd));
+                const keyMaterial = await crypto.subtle.importKey('raw', pwdHash, 'AES-GCM', false, ['decrypt']);
+                const data = Uint8Array.from(atob(ENCRYPTED_KEYS), c => c.charCodeAt(0));
+                const iv = data.slice(0, 12);
+                const ciphertext = data.slice(12);
+                const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, keyMaterial, ciphertext);
+                const obj = JSON.parse(new TextDecoder().decode(plain));
+                localStorage.setItem('_qbk', btoa(JSON.stringify({ t: obj.t, a: obj.a })));
+                _cachedKeys = { token: obj.t, aiKey: obj.a };
+                return _cachedKeys;
+            } catch(e) {
+                alert('密码错误，请刷新重试');
+                return null;
+            }
+        }
+
+        // 兼容旧代码的常量改为getter
+        let currentSection = null;
+
+        const STORAGE_KEY = 'qb_yb_report_comments';
+        const sectionNames = {
+            '_global': '全局评论',
+            'overview': '整体概览',
+            'top-themes': 'Top 5 需求热点',
+            'verbatim': '便签原声墙',
+            'insights': '三条读后洞察',
+            'actions': '平台行动建议'
+        };
+
+        // ========= 评论面板 Tab 切换 =========
+        let currentTab = 'comment'; // 'comment' | 'ai'
+        function switchPanelTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.panel-tab').forEach(b => {
+                b.classList.toggle('active', b.dataset.tab === tab);
+            });
+            document.getElementById('commentSubToolbar').style.display = tab === 'comment' ? 'flex' : 'none';
+            document.getElementById('aiSubToolbar').style.display = tab === 'ai' ? 'block' : 'none';
+            // 退出批量模式
+            if (tab !== 'comment') {
+                document.body.classList.remove('batch-mode');
+                document.getElementById('batchToolbar').style.display = 'none';
+                const btb = document.getElementById('batchToggleBtn');
+                if (btb) { btb.textContent = '批量'; btb.style.background = '#f0f0f0'; btb.style.color = '#666'; }
+            }
+            const ta = document.getElementById('commentInput');
+            const sendBtn = document.getElementById('panelSendBtn');
+            const hint = document.getElementById('commentFooterHint');
+            const isAll = currentScope.kind === 'all';
+            const isGlobal = currentScope.kind === 'global';
+            const isMulti = currentScope.kind === 'multi';
+            const isTarget = currentScope.kind === 'target';
+            const isSection = currentScope.kind === 'section';
+
+            if (tab === 'comment') {
+                if (ta) ta.placeholder = isAll ? '请先点某条评论跳转或选择具体元素'
+                    : isGlobal ? '针对整个页面的反馈或整体方向'
+                    : isMulti ? `针对选中的 ${currentMultiItems.length} 项写评论`
+                    : isTarget ? '针对该元素的评论'
+                    : '输入评论...';
+                if (sendBtn) {
+                    sendBtn.textContent = '发送';
+                    sendBtn.style.background = '#667eea';
+                    sendBtn.disabled = isAll;
+                    sendBtn.style.opacity = isAll ? '0.4' : '1';
+                    sendBtn.style.cursor = isAll ? 'not-allowed' : 'pointer';
+                }
+                if (hint) hint.textContent = isAll ? '👀 全部评论视图：只能浏览，发送评论需先点击元素'
+                    : '评论留言不修改页面';
+            } else {
+                // AI Tab：只在 target/multi scope 下能发
+                const canAI = canSendAI();
+                if (ta) ta.placeholder = isMulti ? `批量改 ${currentMultiItems.length} 项，例如："统一改成蓝色"`
+                    : isTarget ? '描述要怎么改，例如：把这里数字改成5w'
+                    : '请先选中具体元素后发起 AI 修改';
+                if (sendBtn) {
+                    sendBtn.textContent = isMulti ? `⚡ 批量 AI 修改 (${currentMultiItems.length})` : '⚡ 用 AI 修改';
+                    sendBtn.style.background = '#667eea';
+                    sendBtn.disabled = !canAI;
+                    sendBtn.style.opacity = canAI ? '1' : '0.4';
+                    sendBtn.style.cursor = canAI ? 'pointer' : 'not-allowed';
+                }
+                if (hint) hint.textContent = canAI
+                    ? (isMulti ? 'AI 会按你的诉求批量改这些元素，每个元素生成一份方案' : 'AI 会实时改 HTML，结果自动同步到云端，可在版本历史回滚')
+                    : '👀 当前只能查看历史 AI 修改记录 · 选中具体元素后才能发起 AI 修改';
+            }
+            renderComments();
+        }
+
+        // 统一的发送入口
+        function panelSend() {
+            if (currentTab === 'comment') return addComment(false);
+            if (currentTab === 'ai') {
+                if (!canSendAI()) { alert('AI 修改只能针对具体元素或多选 · 请先选中某个元素'); return; }
+                return addComment(true);
+            }
+        }
+
+        // ===== 云端存储（GitHub Gist）=====
+        async function loadFromCloud() {
+            const k = await ensureKeys();
+            if (!k) return getLocal();
+            try {
+                const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                    headers: { 'Authorization': `token ${k.token}` }
+                });
+                if (!res.ok) throw new Error('load failed');
+                const data = await res.json();
+                const content = data.files[GIST_FILENAME].content;
+                return JSON.parse(content) || {};
+            } catch (e) {
+                console.warn('云端加载失败，回退本地', e);
+                return getLocal();
+            }
+        }
+
+        async function saveToCloud(comments) {
+            saveLocal(comments);
+            const k = await ensureKeys();
+            if (!k) return;
+            try {
+                await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `token ${k.token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        files: { [GIST_FILENAME]: { content: JSON.stringify(comments, null, 2) } }
+                    })
+                });
+            } catch (e) {
+                console.warn('云端保存失败', e);
+            }
+        }
+
+        function getLocal() {
+            try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+            catch(e) { return {}; }
+        }
+        function saveLocal(c) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(c));
+        }
+
+        // ===== 评论扁平化访问层（v2.8） =====
+        // 数据结构：{ all: [{ text,author,time,type,scope,section?,targetId?,targets?,version?,aiResponse? }] }
+        async function loadAllComments() {
+            const data = await loadFromCloud();
+            if (!data || !data.all) return [];
+            return Array.isArray(data.all) ? data.all : [];
+        }
+        async function saveAllComments(list) {
+            await saveToCloud({ all: list });
+        }
+        // 判断一条评论是否属于当前查看范围
+        // scope: { kind:'all' } | { kind:'section', id } | { kind:'target', id } | { kind:'multi', ids:[...] } | { kind:'global' }
+        function commentMatchesScope(c, scope) {
+            if (scope.kind === 'all') return true;
+            if (scope.kind === 'global') return c.scope === 'global';
+            if (scope.kind === 'section') {
+                if (c.scope === 'section' && c.section === scope.id) return true;
+                // 模块也算包含其下子元素的评论？默认不包含，让用户清晰看到层级
+                return false;
+            }
+            if (scope.kind === 'target') {
+                // 直接评论该元素
+                if (c.scope === 'target' && c.targetId === scope.id) return true;
+                // 多选评论里 targets 数组命中该元素
+                if (c.scope === 'multi' && (c.targets || []).some(t => t.targetId === scope.id)) return true;
+                return false;
+            }
+            if (scope.kind === 'multi') {
+                // 完全等价：targets 集合等于本次选区
+                if (c.scope === 'multi') {
+                    const cIds = (c.targets || []).map(t => t.targetId).sort().join(',');
+                    const sIds = scope.ids.slice().sort().join(',');
+                    if (cIds === sIds) return true;
+                }
+                // 任一选区元素的单元素评论也展示出来（提供上下文）
+                if (c.scope === 'target' && scope.ids.includes(c.targetId)) return true;
+                return false;
+            }
+            return false;
+        }
+        // 给一条评论计算"展示标签"
+        function getCommentScopeLabel(c) {
+            if (c.scope === 'global') return '🌐 全局';
+            if (c.scope === 'multi') {
+                const n = (c.targets || []).length;
+                return `🔗 跨${n}项`;
+            }
+            if (c.scope === 'section') return `📦 ${sectionNames[c.section] || c.section}`;
+            if (c.scope === 'target') {
+                const el = document.querySelector(`[data-target-id="${c.targetId}"]`);
+                return el ? getTargetLabel(el) : `🎯 ${c.targetId}`;
+            }
+            return '评论';
+        }
+
+        // ===== 业务逻辑 =====
+        function switchStage(n) {
+            document.querySelectorAll('.stage-content').forEach(el => el.classList.remove('active'));
+            document.getElementById('stage-' + n).classList.add('active');
+            document.querySelectorAll('.stage-tab').forEach((el, i) => {
+                if (i + 1 === 1) return;
+                el.classList.remove('active');
+            });
+            const tabs = document.querySelectorAll('.stage-tab');
+            if (n > 1) tabs[n-1].classList.add('active');
+        }
+
+        function setView(v, fromAuto) {
+            if (v === 'mobile') {
+                document.body.classList.add('mobile-view');
+            } else {
+                document.body.classList.remove('mobile-view');
+            }
+            document.querySelectorAll('.view-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.view === v);
+            });
+            // 用户手动切的才记忆，自动识别不写 localStorage
+            if (!fromAuto) {
+                localStorage.setItem('view_pref', v);
+            }
+        }
+
+        // 启动时根据 UA + 用户偏好决定默认视图
+        (function autoDetectView() {
+            const saved = localStorage.getItem('view_pref');
+            if (saved === 'pc' || saved === 'mobile') {
+                setView(saved, true);
+                return;
+            }
+            // UA 识别 + 屏幕宽度兜底
+            const ua = navigator.userAgent || '';
+            const isMobile = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|HarmonyOS/i.test(ua)
+                || (window.matchMedia && window.matchMedia('(max-width: 768px)').matches);
+            setView(isMobile ? 'mobile' : 'pc', true);
+        })();
+
+        async function renderBadges() {
+            const all = await loadAllComments();
+            const isNormal = (c) => !(c.type === 'ai_executed' || c.type === 'ai_pending' || c.type === 'ai_failed' || c.type === 'ai_reverted');
+
+            // 子元素评论计数：scope='target' 直接评论 + scope='multi' 中 targets 命中本元素
+            const targetCounts = {};
+            all.forEach(c => {
+                if (!isNormal(c)) return;
+                if (c.scope === 'target' && c.targetId) {
+                    targetCounts[c.targetId] = (targetCounts[c.targetId] || 0) + 1;
+                } else if (c.scope === 'multi') {
+                    (c.targets || []).forEach(t => {
+                        if (t.targetId) targetCounts[t.targetId] = (targetCounts[t.targetId] || 0) + 1;
+                    });
+                }
+            });
+
+            // 子元素角标
+            document.querySelectorAll('[data-target-id]').forEach(el => {
+                const tid = el.dataset.targetId;
+                const n = targetCounts[tid] || 0;
+                const old = el.querySelector(':scope > .target-flag');
+                if (old) old.remove();
+                el.classList.toggle('has-comments', n > 0);
+                if (n > 0) {
+                    const flag = document.createElement('div');
+                    flag.className = 'target-flag';
+                    flag.textContent = n;
+                    el.appendChild(flag);
+                }
+            });
+
+            // FAB 红点：所有纯评论总数
+            const fab = document.getElementById('globalCommentFab');
+            if (fab) {
+                const totalCount = all.filter(isNormal).length;
+                fab.classList.toggle('has-comments', totalCount > 0);
+                fab.title = totalCount > 0 ? `评论中心（${totalCount}条）` : '评论中心';
+            }
+        }
+
+        // === v2.8: 评论面板的"查看范围" ===
+        // currentScope: { kind: 'all' | 'global' | 'section' | 'target' | 'multi', id?, ids? }
+        // currentSection / currentTarget / currentMultiItems 仅作"发送评论时"的上下文，不再影响渲染过滤
+        let currentTarget = null;
+        let currentMultiItems = null;
+        let currentScope = { kind: 'all' };
+
+        // 用 scope 判定"发送 AI 修改"时操作哪些 DOM
+        // 单元素/多选 scope 时才能 AI 修改；全览/全局/模块时只能评论
+        function canSendAI() {
+            return currentScope.kind === 'target' || currentScope.kind === 'multi';
+        }
+
+        async function openPanel(arg, initialTab) {
+            // 兼容旧调用：字符串 = sectionId 或 _global
+            if (typeof arg === 'string') {
+                if (arg === '_global') {
+                    currentScope = { kind: 'global' };
+                    currentSection = null; currentTarget = null; currentMultiItems = null;
+                } else {
+                    currentScope = { kind: 'section', id: arg };
+                    currentSection = arg; currentTarget = null; currentMultiItems = null;
+                }
+            } else if (arg && arg.kind === 'all') {
+                currentScope = { kind: 'all' };
+                currentSection = null; currentTarget = null; currentMultiItems = null;
+            } else if (arg && arg.kind === 'global') {
+                currentScope = { kind: 'global' };
+                currentSection = null; currentTarget = null; currentMultiItems = null;
+            } else if (arg && arg.kind === 'target') {
+                const el = arg.el;
+                const sectionEl = el.closest('.commentable[data-section]');
+                currentSection = sectionEl ? sectionEl.dataset.section : null;
+                currentTarget = el.dataset.targetId;
+                currentMultiItems = null;
+                currentScope = { kind: 'target', id: currentTarget };
+            } else if (arg && arg.kind === 'multi') {
+                currentSection = null;
+                currentTarget = null;
+                currentMultiItems = arg.items;
+                currentScope = { kind: 'multi', ids: arg.items.map(t => t.targetId) };
+            }
+
+            // 设置面板标题
+            const titleEl = document.getElementById('panelTitle');
+            if (currentScope.kind === 'all') {
+                titleEl.textContent = '评论中心 · 全部';
+            } else if (currentScope.kind === 'global') {
+                titleEl.textContent = '🌐 全局评论';
+            } else if (currentScope.kind === 'section') {
+                titleEl.textContent = `📦 ${sectionNames[currentSection] || currentSection}`;
+            } else if (currentScope.kind === 'target') {
+                const el = document.querySelector(`[data-target-id="${currentTarget}"]`);
+                titleEl.textContent = el ? getTargetLabel(el) : '评论';
+            } else if (currentScope.kind === 'multi') {
+                titleEl.textContent = `🔗 跨元素 · ${currentMultiItems.length} 项`;
+            }
+
+            document.getElementById('commentPanel').classList.add('open');
+            document.body.classList.add('panel-open');
+            switchPanelTab(initialTab || 'comment');
+            // 静默尝试加载已缓存的密钥（不弹密码框）
+            await ensureKeys();
+            await renderComments();
+        }
+
+        function closePanel() {
+            document.getElementById('commentPanel').classList.remove('open');
+            document.body.classList.remove('panel-open', 'panel-expanded');
+            currentSection = null;
+            currentTarget = null;
+            currentMultiItems = null;
+            currentScope = { kind: 'all' };
+            // 关闭面板的同时清掉选区高亮
+            document.querySelectorAll('.selected-target').forEach(el => el.classList.remove('selected-target'));
+            selectedTargets = [];
+            document.body.classList.remove('selection-mode');
+        }
+
+        async function renderComments() {
+            const all = await loadAllComments();
+            const body = document.getElementById('panelBody');
+            const isBatch = document.body.classList.contains('batch-mode');
+
+            // 按 scope 过滤
+            let filtered = all.map((c, originalIdx) => ({ c, originalIdx }))
+                .filter(({c}) => commentMatchesScope(c, currentScope));
+
+            // 再按 Tab 过滤
+            filtered = filtered.filter(({c}) => {
+                const isAIRecord = c.type === 'ai_executed' || c.type === 'ai_pending' || c.type === 'ai_failed' || c.type === 'ai_reverted';
+                return currentTab === 'ai' ? isAIRecord : !isAIRecord;
+            });
+
+            // 时间倒序（最新在上）
+            filtered.sort((a, b) => {
+                const ta = new Date(a.c.time).getTime() || 0;
+                const tb = new Date(b.c.time).getTime() || 0;
+                return tb - ta;
+            });
+
+            // 全览态保留一个简单计数；其他场景不再有蓝色引用框（用户嫌冗余）
+            let scopeBanner = '';
+            if (currentScope.kind === 'all') {
+                scopeBanner = `<div style="padding:6px 10px;background:#fafafa;border-radius:6px;margin-bottom:10px;font-size:11px;color:#888;">
+                    📋 全部评论 · 共 ${filtered.length} 条
+                </div>`;
+            }
+
+            if (filtered.length === 0) {
+                const emptyHint = currentTab === 'ai'
+                    ? (canSendAI() ? '可在下方输入 AI 修改诉求' : '没有 AI 修改记录 · 选中具体元素后才能发起 AI 修改')
+                    : '暂无评论，写下你的想法';
+                body.innerHTML = scopeBanner + `<div style="text-align:center;padding:24px;color:#999;font-size:12px;">${emptyHint}</div>`;
+                return;
+            }
+            body.innerHTML = scopeBanner + filtered.map(({c, originalIdx}) => {
+                const i = originalIdx;
+                const isAI = c.type === 'ai_executed';
+                const isPending = c.type === 'ai_pending';
+                const isFailed = c.type === 'ai_failed';
+                const isReverted = c.type === 'ai_reverted';
+                let bgColor = '#f8f8f8';
+                let badge = '';
+                let extraBtn = '';
+                if (isAI) { bgColor = '#f0f7ff'; badge = `<span style="background:#667eea;color:white;font-size:9px;padding:2px 6px;border-radius:3px;margin-left:6px;">⚡ AI已执行 v${c.version || '?'}</span>`; }
+                if (isPending) {
+                    bgColor = '#fffbe6';
+                    badge = `<span style="background:#faad14;color:white;font-size:9px;padding:2px 6px;border-radius:3px;margin-left:6px;">⏳ 正在处理中</span>`;
+                    extraBtn = `<button onclick="retryComment(${i})" style="margin-top:4px;font-size:10px;padding:2px 8px;background:transparent;color:#888;border:1px solid #ccc;border-radius:3px;cursor:pointer;">如长时间无响应，点击重试</button>`;
+                }
+                if (isFailed) { bgColor = '#fff1f0'; badge = `<span style="background:#ff4d4f;color:white;font-size:9px;padding:2px 6px;border-radius:3px;margin-left:6px;">❌ 失败</span>`;
+                    extraBtn = `<button onclick="retryComment(${i})" style="margin-top:4px;font-size:10px;padding:2px 8px;background:transparent;color:#667eea;border:1px solid #667eea;border-radius:3px;cursor:pointer;">重试</button>`;
+                }
+                if (isReverted) { bgColor = '#fafafa'; badge = `<span style="background:#999;color:white;font-size:9px;padding:2px 6px;border-radius:3px;margin-left:6px;">↩️ 已撤回</span>`; }
+
+                // 显示该评论的 scope 标签
+                const scopeTag = `<span style="font-size:9px;padding:2px 6px;background:white;border:1px solid #d0d4ea;color:#667eea;border-radius:3px;cursor:pointer;" onclick="jumpToCommentTarget(${i})" title="跳到该元素">${getCommentScopeLabel(c).replace(/</g,'&lt;')}</span>`;
+
+                // 多选评论的额外 targets 详情（除主 scope 标签外，其他元素也列出来）
+                let extraTargets = '';
+                if (c.scope === 'multi' && c.targets && c.targets.length > 1) {
+                    extraTargets = `<div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:4px;">${c.targets.map(t => `<span style="font-size:9px;padding:2px 6px;background:#f5f5f7;color:#666;border-radius:3px;">${(t.label || '元素').replace(/</g,'&lt;')}</span>`).join('')}</div>`;
+                }
+
+                const checkbox = isBatch ? `<input type="checkbox" class="batch-cb" data-idx="${i}" onchange="updateBatchCount()" style="margin-right:8px;cursor:pointer;vertical-align:middle;">` : '';
+                const deleteBtn = isBatch ? '' : `<button style="position:absolute;right:8px;top:8px;font-size:10px;color:#ccc;cursor:pointer;border:none;background:none;" onclick="deleteComment(${i})">删除</button>`;
+
+                return `
+                <div style="padding:10px 12px;background:${bgColor};border-radius:8px;margin-bottom:8px;position:relative;display:flex;align-items:flex-start;">
+                    ${checkbox}
+                    <div style="flex:1;min-width:0;">
+                        ${deleteBtn}
+                        <div style="font-size:9px;color:#999;margin-bottom:3px;">${c.author || '匿名'} · ${c.time}${badge}</div>
+                        <div style="margin-bottom:4px;">${scopeTag}</div>
+                        <div style="font-size:12px;color:#333;line-height:1.5;">${c.text.replace(/</g,'&lt;')}</div>
+                        ${extraTargets}
+                        ${c.aiResponse ? `<div style="margin-top:6px;padding:6px 8px;background:white;border-radius:4px;font-size:11px;color:#666;border-left:2px solid #667eea;">${c.aiResponse.replace(/</g,'&lt;')}</div>` : ''}
+                        ${extraBtn}
+                    </div>
+                </div>`;
+            }).join('');
+            if (isBatch) updateBatchCount();
+        }
+
+        // 点击评论里的 scope 标签：跳到对应元素并切到该元素的 scope
+        async function jumpToCommentTarget(idx) {
+            const all = await loadAllComments();
+            const c = all[idx];
+            if (!c) return;
+            if (c.scope === 'target' && c.targetId) {
+                const el = document.querySelector(`[data-target-id="${c.targetId}"]`);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // 闪烁高亮提示
+                    el.style.transition = 'outline 0.3s';
+                    el.style.outline = '3px solid #667eea';
+                    setTimeout(() => { el.style.outline = ''; }, 1200);
+                    openPanel({ kind: 'target', el });
+                }
+            } else if (c.scope === 'section' && c.section) {
+                const el = document.querySelector(`[data-section="${c.section}"]`);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    el.style.transition = 'outline 0.3s';
+                    el.style.outline = '3px solid #667eea';
+                    setTimeout(() => { el.style.outline = ''; }, 1200);
+                    openPanel(c.section);
+                }
+            } else if (c.scope === 'multi' && c.targets && c.targets.length > 0) {
+                // 重建多选状态
+                exitSelectionMode();
+                c.targets.forEach(t => {
+                    const el = document.querySelector(`[data-target-id="${t.targetId}"]`);
+                    if (el) toggleTargetSelection(el);
+                });
+                openMultiSelectPanel('comment');
+            }
+        }
+
+        async function retryComment(idx) {
+            const all = await loadAllComments();
+            const c = all[idx];
+            if (!c) return;
+            const text = c.text;
+            const author = c.author;
+
+            const setBtnState = (loading) => {
+                const btns = document.querySelectorAll('.panel-footer button');
+                btns.forEach(b => b.disabled = loading);
+            };
+            setBtnState(true);
+
+            try {
+                let result;
+                if (c.scope === 'multi' && c.targets && c.targets.length > 0) {
+                    result = await callAIToModifyMulti(text, c.targets);
+                    applyAIResultMulti(result);
+                } else if (c.scope === 'target' && c.targetId) {
+                    const targetEl = document.querySelector(`[data-target-id="${c.targetId}"]`);
+                    if (!targetEl) throw new Error('找不到目标元素');
+                    result = await callAIToModifyTarget(text, targetEl);
+                    applyAIResult(result, targetEl);
+                } else {
+                    throw new Error('该评论 scope 不支持 AI 修改');
+                }
+                const versionNum = await saveVersion(text, author, c.section || null);
+                const all2 = await loadAllComments();
+                all2[idx].type = 'ai_executed';
+                all2[idx].version = versionNum;
+                all2[idx].aiResponse = `${(result && result.summary) || '已修改'}（重试成功）`;
+                await saveAllComments(all2);
+            } catch (e) {
+                console.error('重试失败:', e);
+                const all2 = await loadAllComments();
+                if (all2[idx]) {
+                    all2[idx].type = 'ai_failed';
+                    all2[idx].aiResponse = '重试失败：' + e.message;
+                    await saveAllComments(all2);
+                }
+                alert('重试失败：' + e.message);
+            } finally {
+                setBtnState(false);
+                await renderComments();
+                await renderBadges();
+            }
+        }
+
+        // ===================================================================
+        // v2.11：浮动小气泡 + inline 输入 + 顶部 toast
+        // ===================================================================
+        let bubbleMode = 'comment'; // 'comment' | 'ai'
+
+        function showBubbleToolbar(anchorEl) {
+            const tb = document.getElementById('bubbleToolbar');
+            // AI 修改按钮的可用性
+            const aiBtn = tb.querySelector('button[data-bubble-action="ai"]');
+            const canAI = isInSelectionMode();
+            if (aiBtn) {
+                aiBtn.style.opacity = canAI ? '1' : '0.4';
+                aiBtn.style.cursor = canAI ? 'pointer' : 'not-allowed';
+                aiBtn.disabled = !canAI;
+            }
+            // 隐藏输入框（如果开着）
+            hideBubbleInput();
+            tb.classList.add('show');
+            positionBubble(tb, anchorEl);
+        }
+
+        function hideBubbleToolbar() {
+            const tb = document.getElementById('bubbleToolbar');
+            if (tb) tb.classList.remove('show');
+        }
+
+        function positionBubble(elBubble, anchor) {
+            // 让气泡显示在元素正上方；不够空间则放下方
+            const r = anchor.getBoundingClientRect();
+            const sx = window.scrollX || window.pageXOffset;
+            const sy = window.scrollY || window.pageYOffset;
+            elBubble.style.visibility = 'hidden';
+            elBubble.style.left = '0px'; elBubble.style.top = '0px';
+            // 强制 reflow
+            void elBubble.offsetWidth;
+            const bw = elBubble.offsetWidth;
+            const bh = elBubble.offsetHeight;
+            const vw = document.documentElement.clientWidth;
+            // 默认在元素上方
+            let top = r.top + sy - bh - 10;
+            let left = r.left + sx;
+            const aboveOk = (r.top - bh - 10) > 0;
+            if (!aboveOk) {
+                // 放下方
+                top = r.bottom + sy + 10;
+                elBubble.classList.add('below');
+            } else {
+                elBubble.classList.remove('below');
+            }
+            // 横向边界保护
+            if (left + bw > sx + vw - 8) left = sx + vw - bw - 8;
+            if (left < sx + 8) left = sx + 8;
+            elBubble.style.left = left + 'px';
+            elBubble.style.top = top + 'px';
+            elBubble.style.visibility = '';
+        }
+
+        function openBubbleInput(mode) {
+            if (mode === 'ai' && !isInSelectionMode()) return;
+            bubbleMode = mode;
+            const ti = document.getElementById('bubbleInput');
+            const label = document.getElementById('biModeLabel');
+            const scopeLabel = document.getElementById('biScopeLabel');
+            const tipText = document.getElementById('biTipText');
+            const ta = document.getElementById('bubbleInputText');
+            const sendBtn = document.getElementById('biSendBtn');
+            if (mode === 'ai') {
+                label.textContent = '✨ AI 修改';
+                label.style.background = '#fef3c7';
+                label.style.color = '#b45309';
+                ta.placeholder = selectedTargets.length > 1
+                    ? `批量改 ${selectedTargets.length} 项，例如："统一改成蓝色"`
+                    : '描述要怎么改，例如：把这里数字改成5w';
+                tipText.textContent = '点【发送】按钮提交 · 实时改 HTML';
+                sendBtn.textContent = '⚡ 发送';
+                sendBtn.style.background = '#f59e0b';
+            } else {
+                label.textContent = '💬 评论';
+                label.style.background = '#eef2ff';
+                label.style.color = '#4f46e5';
+                ta.placeholder = selectedTargets.length > 1
+                    ? `针对选中的 ${selectedTargets.length} 项写评论`
+                    : '针对该元素的评论';
+                tipText.textContent = '点【发送】按钮提交';
+                sendBtn.textContent = '发送';
+                sendBtn.style.background = '#667eea';
+            }
+            scopeLabel.textContent = `已选 ${selectedTargets.length} 项`;
+            ta.value = '';
+            // 显示并定位（贴在最后一个选中元素旁）
+            const last = selectedTargets[selectedTargets.length - 1];
+            if (!last) return;
+            const el = document.querySelector(last.selector);
+            if (!el) return;
+            // 隐藏 toolbar，显示输入框
+            hideBubbleToolbar();
+            ti.classList.add('show');
+            positionBubble(ti, el);
+            setTimeout(() => ta.focus(), 10);
+        }
+
+        // 仅关闭输入框，不动选区/工具栏（供 showBubbleToolbar 内部互调避免递归）
+        function hideBubbleInput() {
+            const ti = document.getElementById('bubbleInput');
+            if (ti) ti.classList.remove('show');
+        }
+
+        // v2.11.19：取消按钮 → 彻底回默认态（关输入框 + 关工具栏 + 清选区）
+        function cancelBubbleInput() {
+            hideBubbleInput();
+            hideBubbleToolbar();
+            exitSelectionMode();
+        }
+
+        async function bubbleSubmit() {
+            const ta = document.getElementById('bubbleInputText');
+            const text = (ta.value || '').trim();
+            // v2.11.19：空内容点发送 = 无响应（不关闭、不清选区）
+            if (!text) return;
+            const useAI = (bubbleMode === 'ai');
+            if (useAI && !isInSelectionMode()) {
+                showTopToast('请先选中具体元素再发起 AI 修改');
+                return;
+            }
+            // 把选区写进 currentScope（不开面板）
+            // v2.11.17：单元素优先走 target scope（AI 单元素 prompt 更精准），多元素走 multi
+            if (selectedTargets.length === 1) {
+                const t = selectedTargets[0];
+                currentSection = t.section || null;
+                currentTarget = t.targetId;
+                currentMultiItems = null;
+                currentScope = { kind: 'target', id: t.targetId };
+            } else {
+                currentSection = null;
+                currentTarget = null;
+                currentMultiItems = selectedTargets.slice();
+                currentScope = { kind: 'multi', ids: currentMultiItems.map(t => t.targetId) };
+            }
+            // 灌值进 commentInput，复用 addComment
+            const ci = document.getElementById('commentInput');
+            ci.value = text;
+            // v2.11.19：发送后立即回默认态（关输入框 + 关工具栏 + 清选区）
+            const ti = document.getElementById('bubbleInput');
+            if (ti) ti.classList.remove('show');
+            hideBubbleToolbar();
+            // 注意：清选区后 bubbleSubmit 内部还要用 currentScope/currentMultiItems，已经在上面拷过快照，OK
+            exitSelectionMode();
+            // 给个轻反馈
+            const sendBtn = document.getElementById('biSendBtn');
+            if (sendBtn) sendBtn.disabled = true;
+            try {
+                if (useAI) {
+                    showTopToast('AI 修改指令已发送，请稍等，进度可在 <a onclick="openAITabFromToast()">【AI 修改】</a> tab 里查看');
+                }
+                await addComment(useAI);
+            } finally {
+                if (sendBtn) sendBtn.disabled = false;
+            }
+        }
+
+        // 顶部 toast
+        let _toastTimer = null;
+        function showTopToast(html, ms) {
+            const t = document.getElementById('topToast');
+            if (!t) return;
+            t.innerHTML = html;
+            t.classList.add('show');
+            if (_toastTimer) clearTimeout(_toastTimer);
+            _toastTimer = setTimeout(() => t.classList.remove('show'), ms || 6000);
+        }
+
+        // toast 里点【AI 修改】超链接 → 拉起 AI tab
+        function openAITabFromToast() {
+            const t = document.getElementById('topToast');
+            if (t) t.classList.remove('show');
+            // 用全部 scope 打开面板，切到 AI tab
+            openPanel({ kind: 'all' }, 'ai');
+        }
+
+        // 手机端只读态点元素时的提示（每个设备只弹一次，与新手引导同逻辑）
+        const ANNOTATE_HINT_KEY = 'qb_annotate_hint_shown';
+        function maybeShowAnnotateHint() {
+            if (localStorage.getItem(ANNOTATE_HINT_KEY)) return;
+            localStorage.setItem(ANNOTATE_HINT_KEY, '1');
+            showTopToast('需要评论？请 <a onclick="enableAnnotateFromToast()">【切换】</a> 至批注模式', 8000);
+        }
+        function enableAnnotateFromToast() {
+            const t = document.getElementById('topToast');
+            if (t) t.classList.remove('show');
+            // 如果当前是只读态，切换为批注态
+            if (!document.body.classList.contains('show-comments')) {
+                toggleCommentVisibility();
+            }
+        }
+
+        // v2.11.11：所有输入框完全屏蔽 Enter（既不发送也不换行），发送只能点按钮
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter') return;
+            const t = e.target;
+            if (!t) return;
+            const tag = (t.tagName || '').toLowerCase();
+            if (tag === 'textarea' || tag === 'input') {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        }, true);
+
+        // 输入框：发送只能点按钮（Enter 已被全局屏蔽）
+        document.addEventListener('DOMContentLoaded', () => {
+            // 工具栏按钮：用 capture 监听 + stopPropagation，确保不被 document click handler 截胡
+            const tb = document.getElementById('bubbleToolbar');
+            if (tb) {
+                tb.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const btn = e.target.closest('button[data-bubble-action]');
+                    if (!btn) return;
+                    if (btn.disabled) return;
+                    const action = btn.dataset.bubbleAction;
+                    openBubbleInput(action);
+                }, true);
+                // 阻止 mousedown 触发框选/选中切换
+                tb.addEventListener('mousedown', (e) => {
+                    e.stopPropagation();
+                    e.preventDefault(); // 不让 button 失焦
+                }, true);
+            }
+            // bubbleInput 容器：用 capture 阶段直接监听 button click（数据驱动，不依赖 inline onclick）
+            const ti = document.getElementById('bubbleInput');
+            if (ti) {
+                ti.addEventListener('click', (e) => {
+                    const btn = e.target.closest('button[data-bi-action]');
+                    if (!btn) return;
+                    e.stopPropagation(); // 阻止冒泡到 document，避免误触退出选区等
+                    const action = btn.dataset.biAction;
+                    if (action === 'cancel') cancelBubbleInput();
+                    else if (action === 'send') bubbleSubmit();
+                }, true);
+            }
+        });
+
+        // 滚动/resize 时如果气泡显示中，重新定位
+        let _bubbleRepositionRaf = null;
+        function _scheduleReposition() {
+            if (_bubbleRepositionRaf) return;
+            _bubbleRepositionRaf = requestAnimationFrame(() => {
+                _bubbleRepositionRaf = null;
+                if (!isInSelectionMode()) return;
+                const last = selectedTargets[selectedTargets.length - 1];
+                if (!last) return;
+                const el = document.querySelector(last.selector);
+                if (!el) return;
+                const tb = document.getElementById('bubbleToolbar');
+                const ti = document.getElementById('bubbleInput');
+                if (tb && tb.classList.contains('show')) positionBubble(tb, el);
+                if (ti && ti.classList.contains('show')) positionBubble(ti, el);
+            });
+        }
+        window.addEventListener('scroll', _scheduleReposition, true);
+        window.addEventListener('resize', _scheduleReposition);
+
+        // ===================================================================
+        // v2.11.10：移动端真实视口高度 --vh 动态适配
+        // 解决 Chrome / Safari 移动端底 bar 收起/展开导致的高度跳变 + 留白问题
+        // ===================================================================
+        function _updateVH() {
+            // 优先用 visualViewport（最准），fallback 用 innerHeight
+            const h = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+            // --vh = 1% 视口高度，calc(var(--vh)*70) 即 70% 真实视口
+            document.documentElement.style.setProperty('--vh', (h / 100) + 'px');
+        }
+        _updateVH();
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', _updateVH);
+            window.visualViewport.addEventListener('scroll', _updateVH);
+        }
+        window.addEventListener('resize', _updateVH);
+        window.addEventListener('orientationchange', () => setTimeout(_updateVH, 100));
+
+        // ===================================================================
+        // v2.11.2：手机端评论卡片（底部抽屉，单元素 list+输入）
+        // ===================================================================
+        let mobileCardTarget = null; // 当前卡片绑定的 target 元素
+
+        async function openMobileCommentCard(targetEl) {
+            mobileCardTarget = targetEl;
+            const tid = targetEl.dataset.targetId;
+            const sectionEl = targetEl.closest('.commentable[data-section]');
+            const section = sectionEl ? sectionEl.dataset.section : null;
+            // 设置 currentScope 为 target，让 addComment 复用
+            currentScope = { kind: 'target', id: tid };
+            currentSection = section;
+            currentTarget = tid;
+            currentMultiItems = null;
+            // 标题
+            document.getElementById('mccTitle').textContent = getTargetLabel(targetEl);
+            // 渲染评论 list
+            await renderMobileCardList();
+            // 清空输入
+            document.getElementById('mccInput').value = '';
+            // 显示
+            const card = document.getElementById('mobileCommentCard');
+            card.classList.add('show');
+            document.body.classList.add('mobile-card-open');
+            setTimeout(() => document.getElementById('mccInput').focus(), 300);
+        }
+
+        function hideMobileCommentCard() {
+            const card = document.getElementById('mobileCommentCard');
+            if (!card) return;
+            card.classList.remove('show');
+            document.body.classList.remove('mobile-card-open');
+            mobileCardTarget = null;
+        }
+
+        async function renderMobileCardList() {
+            if (!mobileCardTarget) return;
+            const tid = mobileCardTarget.dataset.targetId;
+            const list = document.getElementById('mccList');
+            const all = await loadAllComments();
+            // 过滤：targetId 匹配，或 targets 数组里包含
+            const filtered = all.filter(c => {
+                if (c.targetId === tid) return true;
+                if (Array.isArray(c.targets) && c.targets.some(t => t.targetId === tid)) return true;
+                return false;
+            });
+            if (filtered.length === 0) {
+                list.innerHTML = `<div class="mcc-empty">暂无评论，写下第一条吧</div>`;
+                return;
+            }
+            list.innerHTML = filtered.map(c => {
+                const isAI = c.type === 'ai_executed';
+                const isPending = c.type === 'ai_pending';
+                const isFailed = c.type === 'ai_failed';
+                const cls = isAI ? 'ai' : '';
+                const badge = isAI ? `<span class="mcc-badge">⚡ AI v${c.version || '?'}</span>`
+                    : isPending ? `<span class="mcc-badge" style="background:#f59e0b;color:white;">AI 执行中</span>`
+                    : isFailed ? `<span class="mcc-badge" style="background:#ff4d4f;color:white;">AI 失败</span>` : '';
+                const text = (c.text || '').replace(/</g, '&lt;');
+                const aiResp = c.aiResponse ? `<div style="margin-top:6px;padding:6px 8px;background:#f0f7ff;border-radius:5px;font-size:11px;color:#555;">${(c.aiResponse || '').replace(/</g, '&lt;')}</div>` : '';
+                return `<div class="mcc-item ${cls}">
+                    <div>${text}${badge}</div>
+                    ${aiResp}
+                    <div class="mcc-meta"><span>${c.author || '匿名'}</span><span>${c.time || ''}</span></div>
+                </div>`;
+            }).join('');
+            // 自动滚到底
+            list.scrollTop = list.scrollHeight;
+        }
+
+        async function submitMobileComment(useAI) {
+            const ta = document.getElementById('mccInput');
+            const text = (ta.value || '').trim();
+            if (!text) return;
+            if (!mobileCardTarget) return;
+            // 灌进 commentInput 复用 addComment
+            const ci = document.getElementById('commentInput');
+            ci.value = text;
+            // 锁按钮
+            const cBtn = document.getElementById('mccBtnComment');
+            const aBtn = document.getElementById('mccBtnAI');
+            cBtn.disabled = true; aBtn.disabled = true;
+            const origCText = cBtn.textContent;
+            const origAText = aBtn.textContent;
+            if (useAI) {
+                aBtn.textContent = 'AI 执行中...';
+                showTopToast('AI 修改指令已发送，请稍等');
+            } else {
+                cBtn.textContent = '发送中...';
+            }
+            try {
+                await addComment(useAI);
+                ta.value = '';
+                // 刷新 list
+                await renderMobileCardList();
+            } finally {
+                cBtn.disabled = false; aBtn.disabled = false;
+                cBtn.textContent = origCText;
+                aBtn.textContent = origAText;
+            }
+        }
+
+        // 卡片：不在 capture 阶段 stopPropagation（会阻止内部按钮 onclick 触发）
+        // document 顶部已经把 #mobileCommentCard 加进白名单 return，无需重复拦截
+
+        async function addComment(useAI) {
+            const input = document.getElementById('commentInput');
+            const text = input.value.trim();
+            if (!text) return;
+            // scope=all 时不能直接发送评论（要选个对象）；这里禁止：让用户先选择
+            if (currentScope.kind === 'all') {
+                alert('在"全部"视图下不能直接发送评论。请：\n· 点某条评论的标签跳转到对应元素\n· 或点击具体子元素 / ⌘多选');
+                return;
+            }
+            // AI 修改只在 target 或 multi scope 下可用
+            if (useAI && !canSendAI()) {
+                alert('AI 修改只能针对具体元素或多选 · 请先选中某个元素');
+                return;
+            }
+
+            // 评论 = 静默尝试解锁；AI 修改 = 强制解锁
+            let k;
+            if (useAI) {
+                k = await unlockKeys();
+                if (!k) { alert('AI 修改需要先验证密码'); return; }
+            } else {
+                k = await ensureKeys();
+            }
+
+            let author = localStorage.getItem('comment_author');
+            if (!author) {
+                author = prompt('请输入您的名字（如：汉博）') || '匿名';
+                localStorage.setItem('comment_author', author);
+            }
+
+            const setBtnState = (loading) => {
+                const btn = document.getElementById('panelSendBtn');
+                if (btn) {
+                    btn.disabled = loading;
+                    btn.style.opacity = loading ? '0.6' : '1';
+                    btn.textContent = loading
+                        ? (useAI ? 'AI 执行中...' : '发送中...')
+                        : (useAI ? '⚡ 用 AI 修改' : '发送');
+                }
+            };
+            setBtnState(true);
+
+            // 构造一条扁平化评论
+            const newComment = {
+                text, author,
+                time: new Date().toLocaleString('zh-CN'),
+                type: useAI ? 'ai_pending' : 'normal',
+                scope: currentScope.kind, // global/section/target/multi
+                targets: []
+            };
+            if (currentScope.kind === 'section') {
+                newComment.section = currentSection;
+            } else if (currentScope.kind === 'target') {
+                newComment.targetId = currentTarget;
+                newComment.section = currentSection;
+                const el = document.querySelector(`[data-target-id="${currentTarget}"]`);
+                newComment.targets = [{
+                    section: currentSection, targetId: currentTarget,
+                    label: el ? getTargetLabel(el) : '元素',
+                    selector: `[data-target-id="${currentTarget}"]`
+                }];
+            } else if (currentScope.kind === 'multi') {
+                newComment.targets = currentMultiItems.map(t => ({
+                    section: t.section, targetId: t.targetId, label: t.label, selector: t.selector
+                }));
+            }
+
+            try {
+                const all = await loadAllComments();
+                all.push(newComment);
+                const commentIdx = all.length - 1;
+                await saveAllComments(all);
+                input.value = '';
+                await renderComments();
+                await renderBadges();
+
+                if (useAI) {
+                    try {
+                        const sectionForBackup = currentSection || (newComment.targets[0] && newComment.targets[0].section) || null;
+                        // v2.11.21：只存操作前 snapshot（供回滚用），不再存操作后。
+                        // 回滚=恢复该 snapshot（即回到操作前状态）
+                        const versionNum = await saveVersion(text, author, sectionForBackup);
+
+                        let result;
+                        if (currentScope.kind === 'multi') {
+                            result = await callAIToModifyMulti(text, currentMultiItems);
+                            applyAIResultMulti(result);
+                        } else if (currentScope.kind === 'target') {
+                            const targetEl = document.querySelector(`[data-target-id="${currentTarget}"]`);
+                            if (!targetEl) throw new Error('找不到目标元素');
+                            result = await callAIToModifyTarget(text, targetEl);
+                            applyAIResult(result, targetEl);
+                        }
+
+                        const all2 = await loadAllComments();
+                        all2[commentIdx].type = 'ai_executed';
+                        all2[commentIdx].version = versionNum;
+                        all2[commentIdx].aiResponse = `${(result && result.summary) || '已修改'}（可在版本历史中回滚）`;
+                        await saveAllComments(all2);
+                    } catch (e) {
+                        console.error('AI修改失败:', e);
+                        const all2 = await loadAllComments();
+                        if (all2[commentIdx]) {
+                            all2[commentIdx].type = 'ai_failed';
+                            all2[commentIdx].aiResponse = '执行失败：' + e.message;
+                            await saveAllComments(all2);
+                        }
+                        alert('AI执行失败：' + e.message);
+                    }
+                }
+            } finally {
+                setBtnState(false);
+                try {
+                    await renderComments();
+                    await renderBadges();
+                } catch(e) { console.warn('刷新失败', e); }
+                // 多选 AI 发送成功后退出多选态
+                if (useAI && currentScope.kind === 'multi') {
+                    currentMultiItems = null;
+                    exitSelectionMode();
+                }
+            }
+        }
+
+        function applyAIResult(result, sectionEl) {
+            if (!result || !result.action) throw new Error('AI返回方案无法识别');
+            const sel = result.target_selector;
+            if (!sel) throw new Error('AI未返回target_selector');
+
+            // 查找目标：1) 先在sectionEl内部找子节点 2) 检查是否就是sectionEl自己 3) 兜底全局查
+            let targets = Array.from(sectionEl.querySelectorAll(sel));
+            if (targets.length === 0) {
+                // 检查sectionEl自身是否匹配（用于"删掉外层框"等场景）
+                try { if (sectionEl.matches(sel)) targets = [sectionEl]; } catch(e) {}
+            }
+            if (targets.length === 0) {
+                // 去掉运行时类（has-comments / has-edit-notes）后重试
+                const cleanSel = sel.replace(/\.has-comments|\.has-edit-notes/g, '');
+                if (cleanSel !== sel) {
+                    targets = Array.from(sectionEl.querySelectorAll(cleanSel));
+                    if (targets.length === 0) {
+                        try { if (sectionEl.matches(cleanSel)) targets = [sectionEl]; } catch(e) {}
+                    }
+                }
+            }
+            if (targets.length === 0) throw new Error('选择器未匹配：' + sel);
+            const el = targets[0];
+
+            switch(result.action) {
+                case 'replace_text':
+                    el.textContent = result.new_text || '';
+                    break;
+                case 'replace_html':
+                    el.innerHTML = result.new_html || '';
+                    break;
+                case 'remove':
+                    // 不允许删除整个 commentable 模块（避免AI误判把整块删掉）
+                    if (el === sectionEl) throw new Error('不能删除整个模块容器，请明确删除内部具体元素');
+                    el.remove();
+                    break;
+                case 'insert_before':
+                    el.insertAdjacentHTML('beforebegin', result.new_html || '');
+                    break;
+                case 'insert_after':
+                    el.insertAdjacentHTML('afterend', result.new_html || '');
+                    break;
+                case 'set_attr':
+                    if (!result.attr_name) throw new Error('set_attr 缺 attr_name');
+                    if (result.attr_value === '' || result.attr_value == null) el.removeAttribute(result.attr_name);
+                    else el.setAttribute(result.attr_name, result.attr_value);
+                    break;
+                default:
+                    throw new Error('未知action: ' + result.action);
+            }
+        }
+
+        // 公共：剥离运行时class和动态注入元素
+        function stripRuntimeForAI(root) {
+            const runtimeClasses = ['has-comments', 'has-edit-notes', 'open', 'active', 'selected-target'];
+            root.querySelectorAll('*').forEach(n => {
+                runtimeClasses.forEach(c => n.classList.remove(c));
+            });
+            runtimeClasses.forEach(c => root.classList.remove(c));
+            root.querySelectorAll('.comment-badge, .edit-note-badge, .module-comment-btn, .target-flag').forEach(n => n.remove());
+        }
+
+        // 公共：调用 Deepseek 单次请求
+        async function callDeepseek(systemPrompt, userMessage) {
+            const k = await ensureKeys();
+            if (!k) throw new Error('未解锁，无法调用AI');
+            console.log('[AI] 开始调用 Deepseek...');
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 60000);
+            let res;
+            try {
+                res = await fetch(AI_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + k.aiKey,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: AI_MODEL,
+                        messages: [
+                            { role: 'system', content: systemPrompt },
+                            { role: 'user', content: userMessage }
+                        ],
+                        stream: false,
+                        temperature: 0.3
+                    }),
+                    signal: controller.signal
+                });
+            } catch (e) {
+                if (e.name === 'AbortError') throw new Error('AI请求超时（>60s）');
+                throw new Error('网络错误：' + e.message);
+            } finally {
+                clearTimeout(timeoutId);
+            }
+            console.log('[AI] HTTP状态:', res.status);
+            if (!res.ok) {
+                const txt = await res.text().catch(() => '');
+                throw new Error('AI API失败 ' + res.status + ': ' + txt.substring(0, 200));
+            }
+            const data = await res.json();
+            let content = data.choices[0].message.content.trim();
+            content = content.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
+            try {
+                return JSON.parse(content);
+            } catch (e) {
+                throw new Error('AI返回非JSON：' + content.substring(0, 100));
+            }
+        }
+
+        async function callAIToModify(userPrompt, sectionId) {
+            const sectionEl = document.querySelector(`[data-section="${sectionId}"]`);
+            if (!sectionEl) throw new Error('找不到模块');
+            const cloned = sectionEl.cloneNode(true);
+            stripRuntimeForAI(cloned);
+            let html = cloned.outerHTML;
+            if (html.length > 6000) html = html.substring(0, 6000) + '...';
+
+            const systemPrompt = `你是HTML修改助手。用户给你一段HTML和修改诉求，返回严格的JSON（不要markdown代码块），格式：
+{
+  "action": "replace_text" | "replace_html" | "remove" | "insert_before" | "insert_after" | "set_attr",
+  "target_selector": "精确CSS选择器",
+  "new_text": "纯文本（action=replace_text）",
+  "new_html": "新HTML片段（action=replace_html / insert_before / insert_after）",
+  "attr_name": "属性名（action=set_attr）",
+  "attr_value": "属性值（action=set_attr，设为空字符串删除属性）",
+  "summary": "一句话中文说明（10-20字）"
+}
+
+规则：
+1. CSS选择器要稳定。**不要使用运行时class（has-comments / open / active / selected-target 等动态状态类）**，优先用语义类或属性选择器（如 [data-section] 、[data-target-id]）
+2. 选择器在传入的"当前模块HTML"范围内查找。如果要操作的是模块根节点本身，可以直接用根节点的标签或属性选择器（例如 div[data-section="settlement"]）
+3. 改样式（颜色/边框/背景）优先用 set_attr 改 style 或 class
+4. 用户说"删掉/去掉/不要XX" → 用 remove 删除目标。**绝不能删除整个 commentable 模块根节点**
+5. 不要返回JSON以外的内容
+6. summary 用中文，10-20字`;
+
+            const userMessage = `当前模块HTML：\n\`\`\`html\n${html}\n\`\`\`\n\n用户诉求：${userPrompt}\n\n请返回JSON。`;
+            return await callDeepseek(systemPrompt, userMessage);
+        }
+
+        // 单子元素 AI 修改
+        async function callAIToModifyTarget(userPrompt, targetEl) {
+            const cloned = targetEl.cloneNode(true);
+            stripRuntimeForAI(cloned);
+            let html = cloned.outerHTML;
+            if (html.length > 4000) html = html.substring(0, 4000) + '...';
+            const systemPrompt = `你是HTML修改助手。用户选中了一个具体子元素（例如一段文字/一张图/一个数据），返回严格的 JSON（不要 markdown）：
+{
+  "action": "replace_text" | "replace_html" | "remove" | "set_attr",
+  "target_selector": "[data-target-id=\\"...\\"]" 或更精确的 CSS 选择器,
+  "new_text": "...", "new_html": "...", "attr_name": "...", "attr_value": "...",
+  "summary": "一句话中文说明"
+}
+规则：
+- 优先 replace_text 或 set_attr，少用 replace_html
+- target_selector 必须能在传入的元素HTML里命中，**最稳的是用 [data-target-id="该元素的id"]**
+- 不要使用运行时类（has-comments/open/active/selected-target）
+- summary 中文 10-20 字`;
+            const userMessage = `当前元素HTML：\n\`\`\`html\n${html}\n\`\`\`\n\n用户诉求：${userPrompt}\n\n请返回JSON。`;
+            return await callDeepseek(systemPrompt, userMessage);
+        }
+
+        // 多元素批量 AI 修改：返回 [{target_id, action, ...}, ...]
+        async function callAIToModifyMulti(userPrompt, items) {
+            // 限制最多 6 个（toast 已在选中时提前提示）
+            const lim = items.slice(0, 6);
+            const blocks = lim.map((t, idx) => {
+                const el = document.querySelector(`[data-target-id="${t.targetId}"]`);
+                if (!el) return null;
+                const cloned = el.cloneNode(true);
+                stripRuntimeForAI(cloned);
+                let html = cloned.outerHTML;
+                if (html.length > 1500) html = html.substring(0, 1500) + '...';
+                return `### 元素 ${idx+1}（target_id="${t.targetId}"，类型=${el.classList.contains('commentable-image') ? 'image' : el.classList.contains('commentable-data') ? 'data' : 'text'}）\n\`\`\`html\n${html}\n\`\`\``;
+            }).filter(Boolean).join('\n\n');
+
+            const systemPrompt = `你是HTML批量修改助手。用户对多个元素同时提一个诉求，你需要为每个元素返回一个修改方案。返回严格的 JSON 数组（不要 markdown）：
+[
+  {
+    "target_id": "元素的data-target-id",
+    "action": "replace_text" | "set_attr" | "remove" | "replace_html",
+    "target_selector": "[data-target-id=\\"...\\"]" 或更精确，
+    "new_text": "...", "new_html": "...", "attr_name": "...", "attr_value": "...",
+    "summary": "一句话说明对该元素做了什么"
+  },
+  ...
+]
+规则：
+- 数组长度等于传入元素个数（每个都要返回方案，即使只是 set_attr 改 style）
+- target_id 字段必须填，且严格等于上下文里的 data-target-id
+- target_selector 一般填 \`[data-target-id="..."]\` 即可
+- 不要使用运行时类
+- 不要返回数组以外的内容（直接以 [ 开头，以 ] 结尾）`;
+            const userMessage = `共 ${lim.length} 个元素：\n\n${blocks}\n\n用户诉求：${userPrompt}\n\n请返回 JSON 数组。`;
+            const result = await callDeepseek(systemPrompt, userMessage);
+            if (!Array.isArray(result)) throw new Error('AI 多选返回非数组');
+            return result;
+        }
+
+        // 批量应用 AI 多选结果
+        function applyAIResultMulti(results) {
+            let summaries = [];
+            let errors = [];
+            let appliedCount = 0;
+            results.forEach(r => {
+                try {
+                    const tid = r.target_id;
+                    if (!tid) throw new Error('缺少 target_id');
+                    const el = document.querySelector(`[data-target-id="${tid}"]`);
+                    if (!el) throw new Error(`找不到 target_id=${tid}`);
+                    applyAIResult(r, el);
+                    appliedCount++;
+                    if (r.summary) summaries.push(r.summary);
+                } catch(e) {
+                    errors.push(`[${r.target_id || '?'}] ${e.message}`);
+                }
+            });
+            // v2.11.17：只要有任意一个失败就抛错，让上层 addComment 标记为 ai_failed 并提示
+            if (errors.length > 0) {
+                const msg = `${appliedCount}/${results.length} 项已改，${errors.length} 项失败：\n${errors.join('\n')}`;
+                throw new Error(msg);
+            }
+            return {
+                summary: summaries.length > 0 ? summaries.join(' / ') : '已批量修改',
+                errors
+            };
+        }
+
+        async function loadVersions() {
+            try {
+                const k = await ensureKeys();
+                if (!k) return [];
+                const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                    headers: { 'Authorization': `token ${k.token}` }
+                });
+                const data = await res.json();
+                const file = data.files && data.files[VERSIONS_FILENAME];
+                if (!file) return [];
+                // v2.11.18：GitHub Gist content > 1MB 时会被 truncated，必须从 raw_url 拉完整内容
+                // 否则 JSON.parse 失败 → 返回 []，后续 saveVersion 会用 [] 覆盖整个文件 → 历史全丢
+                let content = file.content;
+                if (file.truncated && file.raw_url) {
+                    const rawRes = await fetch(file.raw_url, {
+                        headers: { 'Authorization': `token ${k.token}` }
+                    });
+                    content = await rawRes.text();
+                }
+                return JSON.parse(content);
+            } catch(e) {
+                console.error('[loadVersions] 解析失败，为防止历史被覆盖，抛出错误', e);
+                throw e; // v2.11.18：不再静默返回 []，宁可让上层 saveVersion 失败也不能丢历史
+            }
+        }
+
+        // 仅当最新版本不是同一个snapshot时才保存（避免重复存）
+        async function saveVersionIfNeeded(prompt, author, sectionId, beforeChange) {
+            const snapshot = document.querySelector('.container').outerHTML;
+            const versions = await loadVersions();
+            // 如果已存在同样的snapshot作为最近一版，跳过
+            if (versions.length > 0 && versions[versions.length - 1].snapshot === snapshot) return;
+            return saveVersion(prompt, author, sectionId);
+        }
+
+        async function saveVersion(prompt, author, sectionId) {
+            // v2.11.15：克隆后剥离运行时 class（selected-target / has-comments / open / active / has-edit-notes）
+            // 否则下次 restoreLatestSnapshot 会把脏 class 写回 DOM，新用户看到默认选中态
+            const containerClone = document.querySelector('.container').cloneNode(true);
+            stripRuntimeForAI(containerClone);
+            // v2.11.18：把 base64 图片 src 替换成占位符（保留 alt/data-* 等属性）
+            // 恢复时用当前 DOM 同序号 img 的 src 回填，避免 snapshot 体积爆炸（1MB Gist 限制）
+            const imgs = containerClone.querySelectorAll('img');
+            imgs.forEach((img, idx) => {
+                const src = img.getAttribute('src') || '';
+                if (src.startsWith('data:')) {
+                    img.setAttribute('data-img-idx', String(idx));
+                    img.setAttribute('src', `__IMG_PLACEHOLDER_${idx}__`);
+                }
+            });
+            const snapshot = containerClone.outerHTML;
+            const versions = await loadVersions();
+            const versionNum = versions.length + 1;
+            versions.push({
+                v: versionNum,
+                time: new Date().toLocaleString('zh-CN'),
+                author: author,
+                section: sectionId,
+                prompt: prompt,
+                snapshot: snapshot
+            });
+            const trimmed = versions.slice(-5);
+            try {
+                const k = await ensureKeys();
+                if (!k) return versionNum;
+                await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': `token ${k.token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        files: { [VERSIONS_FILENAME]: { content: JSON.stringify(trimmed) } }
+                    })
+                });
+            } catch (e) { console.warn('保存版本失败', e); }
+            return versionNum;
+        }
+
+        async function openVersions() {
+            const modal = document.getElementById('versionModal');
+            modal.style.display = 'flex';
+            const list = document.getElementById('versionList');
+            list.innerHTML = '<div style="text-align:center;color:#999;padding:20px;">加载中...</div>';
+            const versions = await loadVersions();
+            if (versions.length === 0) {
+                list.innerHTML = '<div style="text-align:center;color:#999;padding:20px;">暂无版本记录</div>';
+                return;
+            }
+            list.innerHTML = versions.slice().reverse().map(v => `
+                <div style="padding:12px;background:#f8f8f8;border-radius:8px;margin-bottom:8px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                        <span style="font-size:13px;font-weight:600;color:#333;">v${v.v}</span>
+                        <button onclick="restoreVersion(${v.v})" style="font-size:11px;padding:4px 10px;background:#667eea;color:white;border:none;border-radius:4px;cursor:pointer;">↩️ 撤回此操作</button>
+                    </div>
+                    <div style="font-size:10px;color:#999;margin-bottom:4px;">${v.author} · ${v.time}</div>
+                    <div style="font-size:12px;color:#333;">操作：${(v.prompt || '').replace(/</g,'&lt;')}</div>
+                </div>
+            `).join('');
+        }
+
+        function closeVersions() {
+            document.getElementById('versionModal').style.display = 'none';
+        }
+
+        // v2.11.18：从当前页面收集 img base64 src，按 idx 索引（用于恢复 snapshot 占位符）
+        function collectImageSrcs() {
+            const map = {};
+            document.querySelectorAll('.container img').forEach((img, idx) => {
+                const src = img.getAttribute('src') || '';
+                if (src.startsWith('data:')) map[idx] = src;
+            });
+            return map;
+        }
+        function restoreImagePlaceholders(rootEl, srcMap) {
+            // rootEl 是新插入的 container，里面 src 是 __IMG_PLACEHOLDER_N__
+            rootEl.querySelectorAll('img').forEach(img => {
+                const src = img.getAttribute('src') || '';
+                const m = src.match(/^__IMG_PLACEHOLDER_(\d+)__$/);
+                if (m) {
+                    const idx = parseInt(m[1], 10);
+                    if (srcMap[idx]) {
+                        img.setAttribute('src', srcMap[idx]);
+                        img.removeAttribute('data-img-idx');
+                    }
+                }
+            });
+        }
+
+        async function restoreVersion(v) {
+            if (!confirm(`确定撤回此操作？页面将恢复到该操作执行前的状态。`)) return;
+            const versions = await loadVersions();
+            const target = versions.find(x => x.v === v);
+            if (!target) return alert('版本不存在');
+            // 替换前先收集当前页面 img base64
+            const srcMap = collectImageSrcs();
+            const newContainer = document.createElement('div');
+            newContainer.innerHTML = target.snapshot;
+            const oldContainer = document.querySelector('.container');
+            // 把 snapshot 里的图片占位符还原成真实 base64
+            if (newContainer.firstElementChild) restoreImagePlaceholders(newContainer.firstElementChild, srcMap);
+            oldContainer.parentNode.replaceChild(newContainer.firstElementChild, oldContainer);
+            // 重新注入模块评论按钮 + 子粒度标记
+            assignTargetIds();
+            bindTargetClicks();
+            injectModuleCommentBtns();
+            closeVersions();
+            await renderBadges();
+            // v2.11.19：回滚=撤回语义，不再写新版本。
+            // 直接把云端 versions 截断到 <=v 那一条，让 restoreLatestSnapshot 下次刷新拉到目标版本
+            try {
+                const k = await ensureKeys();
+                if (k) {
+                    const truncated = versions.filter(x => x.v <= v);
+                    await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                        method: 'PATCH',
+                        headers: { 'Authorization': `token ${k.token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            files: { [VERSIONS_FILENAME]: { content: JSON.stringify(truncated) } }
+                        })
+                    });
+                }
+            } catch(e) { console.warn('截断版本失败', e); }
+            // 同时把"AI 已执行 v>v 的评论"标为撤回（type 改回 normal，去掉 version 字段），让 AI 修改 list 不再显示已撤销的记录
+            try {
+                const all = await loadAllComments();
+                let changed = false;
+                all.forEach(c => {
+                    if (c.type === 'ai_executed' && c.version && c.version > v) {
+                        c.type = 'ai_reverted';
+                        c.aiResponse = `已撤回（回到 v${v}）`;
+                        changed = true;
+                    }
+                });
+                if (changed) await saveAllComments(all);
+                await renderComments();
+            } catch(e) { console.warn('刷新评论失败', e); }
+            alert(`已撤回到 v${v}`);
+        }
+
+        async function deleteComment(i) {
+            const all = await loadAllComments();
+            if (all[i]) {
+                all.splice(i, 1);
+                await saveAllComments(all);
+                await renderComments();
+                await renderBadges();
+            }
+        }
+
+        async function exportComments() {
+            const comments = await loadFromCloud();
+            let out = '=== 方案汇报标题（请替换） - 评论汇总 ===\n';
+            out += '导出时间：' + new Date().toLocaleString('zh-CN') + '\n\n';
+            let has = false;
+            for (const [s, items] of Object.entries(comments)) {
+                if (items.length > 0) {
+                    has = true;
+                    out += `【${sectionNames[s] || s}】\n`;
+                    items.forEach(c => out += `  · ${c.author || '匿名'} · ${c.time}\n    ${c.text}\n`);
+                    out += '\n';
+                }
+            }
+            if (!has) { alert('暂无评论可导出'); return; }
+            const blob = new Blob([out], { type: 'text/plain;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `权益卡方案评论_${new Date().toISOString().slice(0,10)}.txt`;
+            a.click();
+        }
+
+        async function clearAllComments() {
+            if (confirm('确定清空所有评论？此操作会同步到云端')) {
+                await saveAllComments([]);
+                await renderBadges();
+                if (currentSection) await renderComments();
+            }
+        }
+
+        // 给每个 .commentable 注入"评论"角标按钮（hover 模块时才显示，点击才打开评论面板）
+        // 模块本身不再绑 click，避免长按选中、划词等被打断
+        // v2.8: 模块右上角的「评论」按钮已废弃 —— 评论入口统一为右下角 💬 全览 + 子元素直接点击
+        // 函数保留以兼容 restoreVersion / restoreLatestSnapshot 的调用，但现在只做清理
+        function injectModuleCommentBtns() {
+            // 移除所有已注入的模块按钮（如果有）
+            document.querySelectorAll('.module-comment-btn').forEach(el => el.remove());
+        }
+
+        // ========= 子粒度评论：自动标记 + 多选 =========
+        // 子粒度元素的"种子"选择器（按父section分组）。这些选择器内的元素将被标记为可独立评论。
+        // 设计：text=文案/标题/段落；image=图片；data=数字/标签/数据点
+        const TARGET_SELECTORS = {
+            text: [
+                '.container > h1', '.container > .subtitle', '.container > .lede',
+                '.stat .k', '.stat .l', '.stat .d',
+                '.theme-card h3', '.theme-card p', '.theme-card .tag',
+                '.note', '.note .cat',
+                '.insight h4', '.insight p',
+                '.action-row .act-title', '.action-row .act-desc', '.action-row .act-tag',
+                '.chapter-head h2', '.chapter-head .idx'
+            ],
+            image: [
+                '.screenshot-item img'
+            ],
+            data: [
+                '.stat .k em', '.stat .k',
+                '.theme-card .rank', '.theme-card .count', '.theme-card .bar',
+                '.chip',
+                '.action-row .act-weight'
+            ]
+        };
+
+        // 为每个匹配的子元素分配稳定 data-target-id
+        function assignTargetIds() {
+            const counter = {}; // { 'qb-exposure-text': 0, ... }
+            for (const [type, selectors] of Object.entries(TARGET_SELECTORS)) {
+                selectors.forEach(sel => {
+                    document.querySelectorAll(sel).forEach(el => {
+                        if (el.dataset.targetId) return; // 防重
+                        const sectionEl = el.closest('.commentable[data-section]');
+                        const section = sectionEl ? sectionEl.dataset.section : '_root';
+                        const key = `${section}-${type}`;
+                        counter[key] = (counter[key] || 0) + 1;
+                        const tid = `${key}-${counter[key]}`;
+                        el.dataset.targetId = tid;
+                        el.classList.add('commentable-' + type);
+                    });
+                });
+            }
+        }
+
+        // 生成元素的简短描述（评论列表里展示用）
+        function getTargetLabel(el) {
+            if (!el) return '元素';
+            // 模块整体（点空白处兜底选中的）
+            if (el.classList.contains('commentable') && el.dataset.section && !el.classList.contains('commentable-text') && !el.classList.contains('commentable-image') && !el.classList.contains('commentable-data')) {
+                return '📦 ' + (sectionNames[el.dataset.section] || el.dataset.section);
+            }
+            if (el.classList.contains('commentable-image')) return '🖼️ 图片';
+            const txt = (el.textContent || '').trim().replace(/\s+/g, ' ');
+            const short = txt.length > 14 ? txt.slice(0, 14) + '…' : txt;
+            const prefix = el.classList.contains('commentable-data') ? '🔢 ' : '📝 ';
+            return prefix + (short || '元素');
+        }
+
+        // ========= 多选状态管理 =========
+        let selectedTargets = []; // [{ targetId, section, label, selector }]
+
+        function isInSelectionMode() { return selectedTargets.length > 0; }
+
+        function getStableSelector(el) {
+            // data-target-id 是我们自己生成的稳定锚点，优先用它
+            return `[data-target-id="${el.dataset.targetId}"]`;
+        }
+
+        function toggleTargetSelection(el) {
+            const tid = el.dataset.targetId;
+            const idx = selectedTargets.findIndex(t => t.targetId === tid);
+            if (idx >= 0) {
+                selectedTargets.splice(idx, 1);
+                el.classList.remove('selected-target');
+            } else {
+                const sectionEl = el.closest('.commentable[data-section]');
+                selectedTargets.push({
+                    targetId: tid,
+                    section: sectionEl ? sectionEl.dataset.section : null,
+                    label: getTargetLabel(el),
+                    selector: getStableSelector(el)
+                });
+                el.classList.add('selected-target');
+            }
+            // 选中后自动打开/刷新评论面板
+            syncSelectionToPanel();
+        }
+
+        // selectedTargets 变化时（v2.11）：
+        // - 选区为空 → 隐藏小气泡和输入框
+        // - 选区非空 → 显示小气泡（评论/AI 修改按钮），定位到最后选中的元素旁边
+        function syncSelectionToPanel() {
+            if (selectedTargets.length === 0) {
+                document.body.classList.remove('selection-mode');
+                hideBubbleToolbar();
+                hideBubbleInput();
+                return;
+            }
+            document.body.classList.add('selection-mode');
+            // v2.11.21：选中超 6 个时立即 toast 提示（不等到发送）
+            if (selectedTargets.length === 7) {
+                showTopToast('Demo 版 AI 修改上限 6 个元素，超出部分不会被处理。进阶诉求请用「💬 评论」留言', 5000);
+            }
+            // 显示小工具栏，定位到最后选中元素旁
+            const last = selectedTargets[selectedTargets.length - 1];
+            const el = document.querySelector(last.selector);
+            if (el) showBubbleToolbar(el);
+        }
+
+        // 兼容旧接口：updateMultiSelectBar / openMultiSelectPanel 仍可被调用，但不再做事
+        function updateMultiSelectBar() { /* deprecated: 工具栏已废弃 */ }
+        function openMultiSelectPanel(initialTab) {
+            if (selectedTargets.length === 0) return;
+            openPanel({ kind: 'multi', items: selectedTargets.slice() }, initialTab);
+        }
+
+        function exitSelectionMode() {
+            document.querySelectorAll('.selected-target').forEach(el => el.classList.remove('selected-target'));
+            selectedTargets = [];
+            syncSelectionToPanel();
+        }
+
+        // 子元素点击：v2.8.4 全部统一到 document 级别 capture，避免多层冲突
+        function bindTargetClicks() {
+            // 已废弃：每个元素单独绑定。现在统一在 document 级别处理。
+        }
+
+        // 工具：判断当前是否手机视图
+        function isMobileView() { return document.body.classList.contains('mobile-view'); }
+
+        // ========= 统一的 click 入口（document 级 capture） v2.11 =========
+        // 行为分支：
+        // PC:
+        //   - ⌘/Ctrl + click 任意可评论元素 → 加入/移出选区，弹小气泡
+        //   - 多选态下 普通click 任意可评论元素 → 加入/移出选区
+        //   - 展示评论态 + 单击有评论的元素 → 选中（弹小气泡）
+        //   - 点空白 + 选区非空 → 清空选区
+        // 手机:
+        //   - 隐藏评论态 → 单击什么都不做
+        //   - 展示评论态 → 单击元素=选中（圆点+小气泡），点空白取消
+        document.addEventListener('click', (e) => {
+            // v2.11：浮动小气泡和输入框点击优先 return，绝不走选区逻辑
+            if (e.target.closest('#bubbleToolbar, #bubbleInput, #topToast, #mobileCommentCard')) return;
+            const showComments = document.body.classList.contains('show-comments');
+            const isCmd = e.metaKey || e.ctrlKey;
+            const inSel = isInSelectionMode();
+            const mobile = isMobileView();
+            // UI 控件不处理
+            if (e.target.closest('#commentPanel, #globalCommentFab, #versionModal, #toggleCommentVisBtn, #helpBtn, #helpModal, .view-switcher, #marqueeBox')) return;
+
+            // 找选中目标（仅可评论子元素或带 data-section 的模块）
+            const findTarget = () => {
+                let t = e.target.closest('.commentable-text, .commentable-image, .commentable-data');
+                if (!t) {
+                    const moduleEl = e.target.closest('.commentable[data-section]');
+                    if (moduleEl) {
+                        if (!moduleEl.dataset.targetId) moduleEl.dataset.targetId = 'mod-' + moduleEl.dataset.section;
+                        t = moduleEl;
+                    }
+                }
+                return t;
+            };
+
+            // ====== 手机：批注态下，单击元素 → 直接弹评论卡片（不走选区）======
+            if (mobile) {
+                const target = findTarget();
+                if (!showComments) {
+                    // 只读态：不阻止任何点击行为（避免误伤 stage-tab / task-btn 等业务交互）
+                    // 只在点到 commentable 元素时异步提示一次切换批注（仅每设备首次）
+                    if (target && !localStorage.getItem(ANNOTATE_HINT_KEY)) {
+                        setTimeout(maybeShowAnnotateHint, 0);
+                    }
+                    return;
+                }
+                if (target) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openMobileCommentCard(target);
+                    return;
+                }
+                // 点空白：如果卡片打开就关掉
+                hideMobileCommentCard();
+                return;
+            }
+
+            // ====== PC：⌘+click 或多选态下点元素 → 选中（唯一进入选中态的入口）======
+            if (isCmd || inSel) {
+                const target = findTarget();
+                if (!target) {
+                    // 多选态下点空白 → 退出
+                    if (inSel && !isCmd) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        exitSelectionMode();
+                    }
+                    return;
+                }
+                e.preventDefault();
+                e.stopPropagation();
+                toggleTargetSelection(target);
+                return;
+            }
+
+            // ====== PC：批注态 + 单击有评论元素 → 打开右侧评论区，过滤显示 ======
+            // 不进选中态、不弹小气泡。可继续在面板里追加新评论。
+            if (showComments) {
+                const target = e.target.closest('[data-target-id].has-comments, .commentable[data-section].has-comments');
+                if (target) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (!target.dataset.targetId && target.dataset.section) {
+                        target.dataset.targetId = 'mod-' + target.dataset.section;
+                    }
+                    if (target.classList.contains('commentable-text') || target.classList.contains('commentable-image') || target.classList.contains('commentable-data')) {
+                        openPanel({ kind: 'target', el: target });
+                    } else {
+                        openPanel(target.dataset.section);
+                    }
+                    return;
+                }
+                // 点空白：如果面板正开着，关掉它
+                const panel = document.getElementById('commentPanel');
+                if (panel && panel.classList.contains('open')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    closePanel();
+                    return;
+                }
+            }
+
+            // 兜底：批注态 + 隐藏态都管 —— 面板开着且点空白 → 关闭
+            // （以防上面分支因为 showComments 切换错过）
+            const panelEl = document.getElementById('commentPanel');
+            if (panelEl && panelEl.classList.contains('open') && !e.target.closest('#commentPanel, #globalCommentFab, #versionModal, #helpModal, #bubbleToolbar, #bubbleInput, #topToast, #mobileCommentCard')) {
+                closePanel();
+            }
+        }, true);
+
+        function openMultiSelectPanel(initialTab) {
+            if (selectedTargets.length === 0) return;
+            // 用一份不可变快照传给面板
+            openPanel({ kind: 'multi', items: selectedTargets.slice() }, initialTab);
+        }
+
+        // ESC 退出多选
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isInSelectionMode()) {
+                exitSelectionMode();
+            }
+        });
+
+        // ========= 框选（⌘/Ctrl + 鼠标拖拽 选中区域内的 commentable-* 元素） =========
+        let marquee = { active: false, startX: 0, startY: 0 };
+        document.addEventListener('mousedown', (e) => {
+            // 仅左键 + 按住 ⌘/Ctrl 时启动框选
+            if (e.button !== 0 || !(e.metaKey || e.ctrlKey)) return;
+            // 在工具栏 / 评论面板 / FAB 等 UI 控件上不触发
+            if (e.target.closest('#multiSelectBar, #commentPanel, #globalCommentFab, #versionModal, #toggleCommentVisBtn, #helpBtn, #helpModal')) return;
+            // 在已经标记的 commentable-* 元素上点击 → 走单击逻辑（toggleTargetSelection），不框选
+            if (e.target.closest('.commentable-text, .commentable-image, .commentable-data')) return;
+
+            marquee.active = true;
+            marquee.startX = e.pageX;
+            marquee.startY = e.pageY;
+            const box = document.getElementById('marqueeBox');
+            box.style.display = 'block';
+            box.style.left = e.pageX + 'px';
+            box.style.top = e.pageY + 'px';
+            box.style.width = '0px';
+            box.style.height = '0px';
+            document.body.classList.add('marquee-dragging');
+            e.preventDefault(); // 阻止默认的文本选中
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!marquee.active) return;
+            const x = Math.min(e.pageX, marquee.startX);
+            const y = Math.min(e.pageY, marquee.startY);
+            const w = Math.abs(e.pageX - marquee.startX);
+            const h = Math.abs(e.pageY - marquee.startY);
+            const box = document.getElementById('marqueeBox');
+            box.style.left = x + 'px';
+            box.style.top = y + 'px';
+            box.style.width = w + 'px';
+            box.style.height = h + 'px';
+        });
+
+        document.addEventListener('mouseup', (e) => {
+            if (!marquee.active) return;
+            marquee.active = false;
+            document.body.classList.remove('marquee-dragging');
+            const box = document.getElementById('marqueeBox');
+            const boxRect = {
+                left: parseFloat(box.style.left),
+                top: parseFloat(box.style.top),
+                right: parseFloat(box.style.left) + parseFloat(box.style.width),
+                bottom: parseFloat(box.style.top) + parseFloat(box.style.height)
+            };
+            box.style.display = 'none';
+
+            // 太小的拖动当点击处理（不框选）
+            const minSize = 6;
+            if (parseFloat(box.style.width) < minSize && parseFloat(box.style.height) < minSize) return;
+
+            // 找到 boxRect 范围内的所有 commentable-* 元素，加入选区
+            let lastEl = null;
+            document.querySelectorAll('.commentable-text, .commentable-image, .commentable-data').forEach(el => {
+                const r = el.getBoundingClientRect();
+                const elRect = {
+                    left: r.left + window.scrollX,
+                    top: r.top + window.scrollY,
+                    right: r.right + window.scrollX,
+                    bottom: r.bottom + window.scrollY
+                };
+                // 相交即选中
+                const overlap = !(elRect.right < boxRect.left || elRect.left > boxRect.right
+                    || elRect.bottom < boxRect.top || elRect.top > boxRect.bottom);
+                if (overlap) {
+                    const tid = el.dataset.targetId;
+                    if (!selectedTargets.find(t => t.targetId === tid)) {
+                        const sectionEl = el.closest('.commentable[data-section]');
+                        selectedTargets.push({
+                            targetId: tid,
+                            section: sectionEl ? sectionEl.dataset.section : null,
+                            label: getTargetLabel(el),
+                            selector: getStableSelector(el)
+                        });
+                        el.classList.add('selected-target');
+                        lastEl = el;
+                    }
+                }
+            });
+            // 框选完成后同步到面板
+            syncSelectionToPanel();
+        });
+
+        // ========= 点空白处退出多选 =========
+        document.addEventListener('click', (e) => {
+            if (!isInSelectionMode()) return;
+            // 点 评论面板 / FAB / 版本modal / 顶部按钮 / commentable 元素 / v2.11 浮层 都不算空白
+            if (e.target.closest('#commentPanel, #globalCommentFab, #versionModal, #toggleCommentVisBtn, #helpBtn, #helpModal, #bubbleToolbar, #bubbleInput, #topToast, #mobileCommentCard')) return;
+            if (e.target.closest('.commentable-text, .commentable-image, .commentable-data')) return;
+            // ⌘/Ctrl 点击空白：可能是想框选误触，不退出
+            if (e.metaKey || e.ctrlKey) return;
+            exitSelectionMode();
+        });
+
+        // 启动时执行
+        assignTargetIds();
+        bindTargetClicks();
+        injectModuleCommentBtns();
+
+        // v2.11.15：启动时强制清除任何残留的选中态/临时高亮（防止 has-comments 持久 outline 等问题）
+        (function clearAnyResidualSelection() {
+            document.querySelectorAll('.selected-target').forEach(el => el.classList.remove('selected-target'));
+            // 清除所有元素 inline outline（如果有的话）
+            document.querySelectorAll('[style*="outline"]').forEach(el => {
+                el.style.outline = '';
+            });
+            selectedTargets = [];
+            document.body.classList.remove('selection-mode');
+        })();
+
+        // 输入框不监听回车，避免误触（兼容中英文输入法换行/确认）
+        // 用户需点击按钮提交
+        // 页面加载时只静默检查（不弹密码框），用户点击模块再触发解锁
+        renderBadges();
+
+        // 启动时从云端拉取最新snapshot，恢复线上AI修改过的内容（如果localStorage有缓存的keys）
+        (async function restoreLatestSnapshot() {
+            const k = await ensureKeys();
+            if (!k) return; // 未解锁就不拉，等用户点模块时会触发解锁
+            try {
+                const versions = await loadVersions();
+                if (versions && versions.length > 0) {
+                    const latest = versions[versions.length - 1];
+                    if (latest.snapshot) {
+                        const newContainer = document.createElement('div');
+                        newContainer.innerHTML = latest.snapshot;
+                        const oldContainer = document.querySelector('.container');
+                        if (oldContainer && newContainer.firstElementChild) {
+                            // v2.11.15：恢复前先剥离 snapshot 里可能残留的运行时 class（防止历史污染）
+                            stripRuntimeForAI(newContainer.firstElementChild);
+                            // v2.11.18：把图片占位符还原成本地 base64
+                            const srcMap = collectImageSrcs();
+                            restoreImagePlaceholders(newContainer.firstElementChild, srcMap);
+                            oldContainer.parentNode.replaceChild(newContainer.firstElementChild, oldContainer);
+                            // 重新注入模块评论按钮 + 子粒度标记
+                            assignTargetIds();
+                            bindTargetClicks();
+                            injectModuleCommentBtns();
+                            await renderBadges();
+                            console.log(`[restore] 已恢复到云端 v${latest.v}（${latest.author} · ${latest.time}）`);
+                        }
+                    }
+                }
+            } catch(e) { console.warn('恢复snapshot失败', e); }
+        })();
+
+        // ========= 新手引导浮层 =========
+        const HELP_KEY = 'qb_report_helped_v2';
+
+        // 三个步骤的 SVG 动画（CSS animation 驱动）
+        const HELP_ANIMS = {
+            "pc-1": `<svg class="help-svg" viewBox="0 0 360 320" xmlns="http://www.w3.org/2000/svg">
+                <style>
+                    @keyframes p1-cursor { 0%,10% { transform: translate(40px,260px); } 35%,100% { transform: translate(150px,140px); } }
+                    @keyframes p1-key { 0%,9% { opacity:0; } 12%,100% { opacity:1; } }
+                    @keyframes p1-elem { 0%,32% { stroke:#ddd; stroke-width:1; fill:white; } 38%,100% { stroke:#667eea; stroke-width:2.5; fill:rgba(102,126,234,0.10); } }
+                    @keyframes p1-bubble { 0%,55% { opacity:0; transform:translateY(8px) scale(0.9); } 70%,100% { opacity:1; transform:translateY(0) scale(1); } }
+                    .p1-cursor { animation: p1-cursor 3.5s ease-out infinite; }
+                    .p1-key { animation: p1-key 3.5s linear infinite; }
+                    .p1-elem { animation: p1-elem 3.5s linear infinite; }
+                    .p1-bubble { animation: p1-bubble 3.5s ease-out infinite; transform-origin: 180px 110px; }
+                </style>
+                <!-- 模拟页面卡片 -->
+                <rect x="50" y="55" width="260" height="200" rx="10" fill="white" stroke="#e8e8e8"/>
+                <rect x="70" y="75" width="100" height="12" rx="2" fill="#f0f0f0"/>
+                <rect x="70" y="98" width="180" height="8" rx="2" fill="#eee"/>
+                <!-- 目标元素 -->
+                <rect class="p1-elem" x="70" y="140" width="180" height="36" rx="4"/>
+                <text x="160" y="163" font-size="13" fill="#333" font-weight="600" text-anchor="middle">数字 40w</text>
+                <rect x="70" y="195" width="120" height="8" rx="2" fill="#eee"/>
+                <rect x="70" y="213" width="80" height="8" rx="2" fill="#eee"/>
+                <!-- ⌘ 键提示 -->
+                <g class="p1-key">
+                    <rect x="20" y="270" width="56" height="26" rx="5" fill="#1f2937"/>
+                    <text x="48" y="287" fill="white" font-size="13" font-family="monospace" text-anchor="middle">⌘ click</text>
+                </g>
+                <!-- 选中后的小气泡（深色） -->
+                <g class="p1-bubble">
+                    <rect x="100" y="100" width="160" height="32" rx="7" fill="#1f2937"/>
+                    <rect x="170" y="106" width="1" height="20" fill="rgba(255,255,255,0.2)"/>
+                    <text x="135" y="121" fill="white" font-size="12" font-weight="600" text-anchor="middle">💬 评论</text>
+                    <text x="215" y="121" fill="white" font-size="12" font-weight="600" text-anchor="middle">✨ AI 修改</text>
+                    <!-- 小箭头 -->
+                    <polygon points="115,132 121,140 127,132" fill="#1f2937"/>
+                </g>
+                <!-- 鼠标 -->
+                <g class="p1-cursor">
+                    <path d="M0 0 L0 18 L5 14 L8 22 L11 21 L8 13 L14 13 Z" fill="#333" stroke="white" stroke-width="1.2"/>
+                </g>
+                <text x="180" y="290" font-size="11" fill="#999" text-anchor="middle">⌘ 单击元素 → 蓝色实线 + 深色小气泡</text>
+            </svg>`,
+
+            "pc-2": `<svg class="help-svg" viewBox="0 0 360 320" xmlns="http://www.w3.org/2000/svg">
+                <style>
+                    @keyframes p2-input { 0%,20% { opacity:0; transform: translateY(6px); } 30%,100% { opacity:1; transform: translateY(0); } }
+                    @keyframes p2-typing { 0%,35% { width:0; } 60%,100% { width:130px; } }
+                    @keyframes p2-panel { 0%,65% { opacity:0; transform: translateX(60px); } 80%,100% { opacity:1; transform: translateX(0); } }
+                    @keyframes p2-export { 0%,85% { fill:#f0f0f0; } 90%,100% { fill:#667eea; } }
+                    .p2-input { animation: p2-input 4s ease-out infinite; }
+                    .p2-text { animation: p2-typing 4s ease-out infinite; }
+                    .p2-panel { animation: p2-panel 4s ease-out infinite; }
+                    .p2-export { animation: p2-export 4s linear infinite; }
+                </style>
+                <!-- 已选中元素 -->
+                <rect x="30" y="30" width="180" height="36" rx="4" fill="rgba(102,126,234,0.10)" stroke="#667eea" stroke-width="2"/>
+                <text x="120" y="53" font-size="12" fill="#333" font-weight="600" text-anchor="middle">总曝光 ~40w</text>
+                <!-- 气泡（💬 评论 高亮） -->
+                <rect x="50" y="4" width="130" height="22" rx="5" fill="#1f2937"/>
+                <rect x="55" y="7" width="50" height="16" rx="3" fill="rgba(102,126,234,0.4)"/>
+                <text x="80" y="19" fill="white" font-size="9" font-weight="600" text-anchor="middle">💬 评论</text>
+                <text x="135" y="19" fill="rgba(255,255,255,0.6)" font-size="9" text-anchor="middle">✨ AI 修改</text>
+                <!-- inline 输入框 -->
+                <g class="p2-input">
+                    <rect x="30" y="80" width="180" height="70" rx="8" fill="white" stroke="#667eea" stroke-width="1.5"/>
+                    <rect x="40" y="90" width="60" height="14" rx="7" fill="#eef2ff"/>
+                    <text x="70" y="100" fill="#4f46e5" font-size="9" font-weight="600" text-anchor="middle">💬 评论</text>
+                    <rect x="40" y="110" width="150" height="20" rx="4" fill="white" stroke="#e5e7eb"/>
+                    <rect class="p2-text" x="46" y="118" height="5" rx="2" fill="#333" style="width:0"/>
+                    <rect x="145" y="135" width="50" height="14" rx="3" fill="#667eea"/>
+                    <text x="170" y="145" fill="white" font-size="8" font-weight="600" text-anchor="middle">发送</text>
+                </g>
+                <!-- 右侧评论面板 -->
+                <g class="p2-panel">
+                    <rect x="230" y="20" width="120" height="270" rx="6" fill="white" stroke="#e0e0e0"/>
+                    <text x="250" y="42" font-size="10" font-weight="700" fill="#333">💬 评论</text>
+                    <text x="310" y="42" font-size="10" fill="#999">⚡ AI</text>
+                    <line x1="240" y1="50" x2="290" y2="50" stroke="#667eea" stroke-width="2"/>
+                    <!-- 评论列表 -->
+                    <rect x="240" y="60" width="100" height="28" rx="4" fill="#f8f8f8"/>
+                    <rect x="246" y="66" width="50" height="4" rx="2" fill="#999"/>
+                    <rect x="246" y="76" width="80" height="4" rx="2" fill="#aaa"/>
+                    <rect x="240" y="96" width="100" height="28" rx="4" fill="#f8f8f8"/>
+                    <rect x="246" y="102" width="60" height="4" rx="2" fill="#999"/>
+                    <rect x="246" y="112" width="70" height="4" rx="2" fill="#aaa"/>
+                    <!-- 导出按钮 -->
+                    <rect class="p2-export" x="240" y="250" width="100" height="24" rx="4"/>
+                    <text x="290" y="266" fill="white" font-size="9" font-weight="600" text-anchor="middle">📤 导出全部评论</text>
+                </g>
+                <text x="180" y="313" font-size="13" fill="#333" font-weight="600" text-anchor="middle">评论存云端 · owner 可导出给 WorkBuddy 返工</text>
+            </svg>`,
+
+            "pc-3": `<svg class="help-svg" viewBox="0 0 360 320" xmlns="http://www.w3.org/2000/svg">
+                <style>
+                    @keyframes p3-input { 0%,15% { opacity:0; } 25%,100% { opacity:1; } }
+                    @keyframes p3-typing { 0%,30% { width:0; } 50%,100% { width:110px; } }
+                    @keyframes p3-changed { 0%,55% { fill:#333; } 65%,100% { fill:#0000ff; } }
+                    @keyframes p3-panel { 0%,60% { opacity:0; transform: translateX(60px); } 75%,100% { opacity:1; transform: translateX(0); } }
+                    @keyframes p3-revert { 0%,85% { fill:#f0f0f0; } 92%,100% { fill:#ff4d4f; } }
+                    .p3-input { animation: p3-input 5s ease-out infinite; }
+                    .p3-text { animation: p3-typing 5s ease-out infinite; }
+                    .p3-changed { animation: p3-changed 5s linear infinite; }
+                    .p3-panel { animation: p3-panel 5s ease-out infinite; }
+                    .p3-revert { animation: p3-revert 5s linear infinite; }
+                </style>
+                <!-- 已选中元素 -->
+                <rect x="30" y="30" width="180" height="36" rx="4" fill="rgba(102,126,234,0.10)" stroke="#667eea" stroke-width="2"/>
+                <text class="p3-changed" x="120" y="53" font-size="12" font-weight="600" text-anchor="middle">总曝光 ~40w</text>
+                <!-- 气泡（✨ AI 修改 高亮） -->
+                <rect x="50" y="4" width="130" height="22" rx="5" fill="#1f2937"/>
+                <text x="80" y="19" fill="rgba(255,255,255,0.6)" font-size="9" text-anchor="middle">💬 评论</text>
+                <rect x="110" y="7" width="65" height="16" rx="3" fill="rgba(245,158,11,0.4)"/>
+                <text x="142" y="19" fill="white" font-size="9" font-weight="600" text-anchor="middle">✨ AI 修改</text>
+                <!-- inline 输入框（橙色主题） -->
+                <g class="p3-input">
+                    <rect x="30" y="80" width="180" height="70" rx="8" fill="white" stroke="#f59e0b" stroke-width="1.5"/>
+                    <rect x="40" y="90" width="70" height="14" rx="7" fill="#fef3c7"/>
+                    <text x="75" y="100" fill="#b45309" font-size="9" font-weight="600" text-anchor="middle">✨ AI 修改</text>
+                    <rect x="40" y="110" width="150" height="20" rx="4" fill="white" stroke="#e5e7eb"/>
+                    <rect class="p3-text" x="46" y="118" height="5" rx="2" fill="#333" style="width:0"/>
+                    <rect x="140" y="135" width="55" height="14" rx="3" fill="#f59e0b"/>
+                    <text x="167" y="145" fill="white" font-size="8" font-weight="600" text-anchor="middle">⚡ 发送</text>
+                </g>
+                <!-- 右侧 AI 修改面板 + 版本历史 -->
+                <g class="p3-panel">
+                    <rect x="230" y="20" width="120" height="270" rx="6" fill="white" stroke="#e0e0e0"/>
+                    <text x="250" y="42" font-size="10" fill="#999">💬 评论</text>
+                    <text x="310" y="42" font-size="10" font-weight="700" fill="#333">⚡ AI</text>
+                    <line x1="290" y1="50" x2="340" y2="50" stroke="#667eea" stroke-width="2"/>
+                    <!-- AI 执行记录 -->
+                    <rect x="240" y="60" width="100" height="36" rx="4" fill="#f0f7ff"/>
+                    <rect x="246" y="66" width="46" height="10" rx="2" fill="#667eea"/>
+                    <text x="269" y="73" font-size="7" fill="white" font-weight="600" text-anchor="middle">⚡ AI v1</text>
+                    <text x="246" y="88" font-size="8" fill="#555">字色改蓝</text>
+                    <!-- 版本历史按钮 -->
+                    <rect x="240" y="110" width="100" height="20" rx="3" fill="#f0f0f0"/>
+                    <text x="290" y="124" font-size="9" fill="#666" text-anchor="middle">📜 版本历史</text>
+                    <!-- 撤回按钮 -->
+                    <rect class="p3-revert" x="240" y="145" width="100" height="24" rx="4"/>
+                    <text x="290" y="161" fill="white" font-size="9" font-weight="600" text-anchor="middle">↩️ 撤回此操作</text>
+                    <text x="290" y="194" font-size="11" fill="#666" font-weight="500" text-anchor="middle">恢复到操作前状态</text>
+                </g>
+                <text x="180" y="313" font-size="13" fill="#333" font-weight="600" text-anchor="middle">AI 3-15 秒改页面 · 改坏一键撤回</text>
+            </svg>`,
+
+            // ===== 手机端动画 =====
+            "mobile-1": `<svg class="help-svg" viewBox="0 0 240 360" xmlns="http://www.w3.org/2000/svg">
+                <style>
+                    @keyframes m1-finger { 0%,15% { opacity:0; transform: translate(140px,80px); } 30%,55% { opacity:1; transform: translate(140px,40px); } 70%,100% { opacity:0; transform: translate(140px,40px); } }
+                    @keyframes m1-btn { 0%,40% { fill:white; stroke:#e0e0e0; } 55%,100% { fill:#667eea; stroke:#667eea; } }
+                    @keyframes m1-text { 0%,40% { fill:#666; } 55%,100% { fill:white; } }
+                    @keyframes m1-label { 0%,40% { opacity:1; } 50%,100% { opacity:0; } }
+                    @keyframes m1-label-on { 0%,45% { opacity:0; } 60%,100% { opacity:1; } }
+                    .m1-finger { animation: m1-finger 3.5s ease-out infinite; }
+                    .m1-btn { animation: m1-btn 3.5s linear infinite; }
+                    .m1-text { animation: m1-text 3.5s linear infinite; }
+                    .m1-label-off { animation: m1-label 3.5s linear infinite; }
+                    .m1-label-on { animation: m1-label-on 3.5s linear infinite; }
+                </style>
+                <!-- 手机外框 -->
+                <rect x="20" y="10" width="200" height="340" rx="22" fill="white" stroke="#333" stroke-width="2"/>
+                <rect x="32" y="30" width="176" height="300" rx="4" fill="#fafbff"/>
+                <!-- 顶部右上按钮 -->
+                <rect class="m1-btn" x="130" y="40" width="62" height="26" rx="5" stroke-width="1.5"/>
+                <text class="m1-text m1-label-off" x="161" y="57" font-size="11" font-weight="600" text-anchor="middle">只读</text>
+                <text class="m1-text m1-label-on" x="161" y="57" font-size="11" font-weight="600" text-anchor="middle">批注</text>
+                <!-- 帮助按钮 -->
+                <circle cx="200" cy="53" r="11" fill="white" stroke="#e0e0e0"/>
+                <text x="200" y="58" font-size="11" fill="#667eea" font-weight="700" text-anchor="middle">?</text>
+                <!-- 模拟页面 -->
+                <rect x="40" y="100" width="160" height="60" rx="6" fill="white" stroke="#e0e0e0"/>
+                <rect x="50" y="115" width="80" height="6" rx="2" fill="#eee"/>
+                <rect x="50" y="130" width="120" height="6" rx="2" fill="#eee"/>
+                <rect x="50" y="145" width="100" height="6" rx="2" fill="#eee"/>
+                <!-- 手指 -->
+                <g class="m1-finger">
+                    <circle cx="20" cy="20" r="20" fill="rgba(102,126,234,0.18)"/>
+                    <circle cx="20" cy="20" r="12" fill="rgba(102,126,234,0.5)"/>
+                </g>
+                <text x="120" y="253" font-size="12" fill="#333" font-weight="600" text-anchor="middle">点【只读】→【批注】(蓝底)</text>
+                <text x="120" y="273" font-size="11" fill="#667eea" font-weight="600" text-anchor="middle">如需评论，先切换为批注模式</text>
+                <text x="120" y="294" font-size="10" fill="#999" text-anchor="middle">只读态点元素无反应</text>
+            </svg>`,
+
+            "mobile-2": `<svg class="help-svg" viewBox="0 0 240 360" xmlns="http://www.w3.org/2000/svg">
+                <style>
+                    @keyframes m2-typing { 0%,20% { width:0; } 50%,100% { width:100px; } }
+                    @keyframes m2-btn-highlight { 0%,55% { fill:#667eea; } 60%,75% { fill:#4c63d9; transform:scale(1.04); } 85%,100% { fill:#667eea; transform:scale(1); } }
+                    @keyframes m2-new { 0%,80% { opacity:0; transform:translateY(-4px); } 92%,100% { opacity:1; transform:translateY(0); } }
+                    .m2-text { animation: m2-typing 4s ease-out infinite; }
+                    .m2-btn { animation: m2-btn-highlight 4s ease-in-out infinite; transform-origin: 81px 267px; transform-box: fill-box; }
+                    .m2-new { animation: m2-new 4s ease-out infinite; }
+                </style>
+                <!-- 手机外框 -->
+                <rect x="20" y="10" width="200" height="340" rx="22" fill="white" stroke="#333" stroke-width="2"/>
+                <rect x="32" y="30" width="176" height="300" rx="4" fill="#fafbff"/>
+                <!-- 抽屉已展开 -->
+                <rect x="32" y="50" width="176" height="280" rx="14" fill="white" stroke="#e0e0e0"/>
+                <text x="44" y="70" font-size="11" font-weight="600" fill="#333">📝 数字 40w</text>
+                <circle cx="186" cy="66" r="9" fill="#f3f4f6"/>
+                <text x="186" y="70" font-size="11" fill="#666" text-anchor="middle">×</text>
+                <line x1="32" y1="80" x2="208" y2="80" stroke="#f0f0f0"/>
+                <!-- 历史评论 -->
+                <rect x="44" y="90" width="152" height="30" rx="5" fill="white" stroke="#eee"/>
+                <text x="50" y="102" font-size="8" fill="#444" font-weight="600">汉博</text>
+                <rect x="50" y="107" width="110" height="4" rx="2" fill="#999"/>
+                <!-- 新增评论动画 -->
+                <g class="m2-new">
+                    <rect x="44" y="126" width="152" height="30" rx="5" fill="#eef9f1" stroke="#10b981"/>
+                    <text x="50" y="138" font-size="8" fill="#10b981" font-weight="600">你 · 刚刚</text>
+                    <rect x="50" y="143" width="90" height="4" rx="2" fill="#10b981"/>
+                </g>
+                <!-- 输入框 -->
+                <rect x="44" y="180" width="152" height="34" rx="6" fill="white" stroke="#e0e0e0"/>
+                <rect class="m2-text" x="50" y="194" height="5" rx="2" fill="#333" style="width:0"/>
+                <!-- 双按钮 -->
+                <g class="m2-btn">
+                    <rect x="44" y="248" width="74" height="26" rx="5" fill="#667eea"/>
+                    <text x="81" y="265" fill="white" font-size="10" font-weight="600" text-anchor="middle">💬 发表评论</text>
+                </g>
+                <rect x="122" y="248" width="74" height="26" rx="5" fill="#fef3c7"/>
+                <text x="159" y="265" fill="#b45309" font-size="10" font-weight="600" text-anchor="middle">✨ AI 修改</text>
+                <!-- 提示文字（简短） -->
+                <text x="120" y="306" font-size="11" fill="#333" font-weight="600" text-anchor="middle">评论存云端 · 可【📤 导出全部】返工</text>
+            </svg>`,
+
+            "mobile-3": `<svg class="help-svg" viewBox="0 0 240 360" xmlns="http://www.w3.org/2000/svg">
+                <style>
+                    @keyframes m3-typing { 0%,20% { width:0; } 50%,100% { width:100px; } }
+                    @keyframes m3-btn-highlight { 0%,55% { fill:#fef3c7; } 60%,75% { fill:#fde68a; transform:scale(1.04); } 85%,100% { fill:#fef3c7; transform:scale(1); } }
+                    @keyframes m3-changed { 0%,65% { fill:#333; } 80%,100% { fill:#0000ff; } }
+                    .m3-text { animation: m3-typing 4s ease-out infinite; }
+                    .m3-btn { animation: m3-btn-highlight 4s ease-in-out infinite; transform-origin: 159px 265px; transform-box: fill-box; }
+                    .m3-changed { animation: m3-changed 4s linear infinite; }
+                </style>
+                <!-- 手机外框 -->
+                <rect x="20" y="10" width="200" height="340" rx="22" fill="white" stroke="#333" stroke-width="2"/>
+                <rect x="32" y="30" width="176" height="300" rx="4" fill="#fafbff"/>
+                <!-- 页面预览：数字变蓝动画 -->
+                <rect x="40" y="40" width="160" height="30" rx="4" fill="rgba(102,126,234,0.08)" stroke="#667eea" stroke-width="1.5"/>
+                <text class="m3-changed" x="120" y="60" font-size="12" font-weight="600" text-anchor="middle">数字 40w</text>
+                <!-- 抽屉已展开 -->
+                <rect x="32" y="84" width="176" height="246" rx="14" fill="white" stroke="#e0e0e0"/>
+                <text x="44" y="104" font-size="11" font-weight="600" fill="#333">📝 数字 40w</text>
+                <circle cx="186" cy="100" r="9" fill="#f3f4f6"/>
+                <text x="186" y="104" font-size="11" fill="#666" text-anchor="middle">×</text>
+                <line x1="32" y1="114" x2="208" y2="114" stroke="#f0f0f0"/>
+                <!-- AI 执行记录 -->
+                <rect x="44" y="126" width="152" height="34" rx="5" fill="#f0f7ff"/>
+                <rect x="50" y="132" width="52" height="11" rx="2" fill="#667eea"/>
+                <text x="76" y="140" font-size="7" fill="white" font-weight="600" text-anchor="middle">⚡ AI v1</text>
+                <text x="50" y="155" font-size="8" fill="#555">字色改蓝</text>
+                <!-- 输入框 -->
+                <rect x="44" y="180" width="152" height="34" rx="6" fill="white" stroke="#e0e0e0"/>
+                <rect class="m3-text" x="50" y="194" height="5" rx="2" fill="#333" style="width:0"/>
+                <!-- 双按钮 -->
+                <rect x="44" y="248" width="74" height="26" rx="5" fill="#667eea"/>
+                <text x="81" y="265" fill="white" font-size="10" font-weight="600" text-anchor="middle">💬 评论</text>
+                <g class="m3-btn">
+                    <rect x="122" y="248" width="74" height="26" rx="5" fill="#fef3c7"/>
+                    <text x="159" y="265" fill="#b45309" font-size="10" font-weight="600" text-anchor="middle">✨ AI 修改</text>
+                </g>
+                <!-- 提示文字 -->
+                <text x="120" y="306" font-size="11" fill="#333" font-weight="600" text-anchor="middle">AI 3-15 秒改页面 · 版本历史一键撤回</text>
+            </svg>`
+        };
+
+        // 步骤数据 + 按设备区分
+        const HELP_STEPS = {
+            pc: [
+                { num: 1, title: '⌘ 选中元素', desc: '⌘/Ctrl + 单击元素选中；或空白处拖动框选多个' },
+                { num: 2, title: '💬 评论 + 导出', desc: '点气泡「💬 评论」写反馈；可【📤 导出全部】' },
+                { num: 3, title: '✨ AI 修改 + 撤回', desc: '点气泡「✨ AI 修改」描述改动 → 3-15 秒生效；版本历史可撤回' }
+            ],
+            mobile: [
+                { num: 1, title: '切批注 + 点元素', desc: '右上角【只读】→【批注】；点元素弹底部卡片' },
+                { num: 2, title: '💬 评论 + 导出', desc: '卡片写反馈 → 发表；可【📤 导出全部】' },
+                { num: 3, title: '✨ AI 修改 + 撤回', desc: '卡片描述改动 → AI 秒改；版本历史可撤回' }
+            ]
+        };
+
+        let currentHelpDevice = 'pc';
+        let currentHelpStep = 1;
+
+        function renderHelpSteps() {
+            const wrap = document.getElementById('helpSteps');
+            if (!wrap) return;
+            const steps = HELP_STEPS[currentHelpDevice];
+            wrap.innerHTML = steps.map(s => {
+                const active = s.num === currentHelpStep;
+                return `<div class="help-step${active ? ' active' : ''}" data-step="${s.num}" onclick="switchHelpStep(${s.num})" style="padding:12px 14px;border:1.5px solid ${active ? '#667eea' : '#f0f0f0'};background:${active ? '#f0f4ff' : 'white'};border-radius:10px;cursor:pointer;transition:all 0.15s;">
+                    <div style="font-size:13px;font-weight:600;color:#333;display:flex;align-items:center;gap:6px;">
+                        <span style="background:${active ? '#667eea' : '#999'};color:white;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">${s.num}</span>
+                        ${s.title}
+                    </div>
+                    <div style="font-size:12px;color:#666;line-height:1.6;margin-top:6px;">${s.desc}</div>
+                </div>`;
+            }).join('');
+        }
+
+        function switchHelpStep(n) {
+            currentHelpStep = n;
+            renderHelpSteps();
+            const anim = document.getElementById('helpAnim');
+            const animKey = currentHelpDevice + '-' + n;
+            if (anim) anim.innerHTML = HELP_ANIMS[animKey] || HELP_ANIMS[n] || '';
+        }
+
+        function switchHelpDevice(device) {
+            currentHelpDevice = device;
+            currentHelpStep = 1;
+            // device-tab 激活态
+            document.querySelectorAll('.device-tab').forEach(b => {
+                const act = b.dataset.device === device;
+                b.classList.toggle('active', act);
+                b.style.background = act ? '#f0f4ff' : 'transparent';
+                b.style.color = act ? '#667eea' : '#999';
+                b.style.borderBottomColor = act ? '#667eea' : 'transparent';
+            });
+            const animArea = document.getElementById('helpAnim');
+            const stepsArea = document.getElementById('helpSteps');
+            if (device === 'about') {
+                // "关于" Tab：全宽介绍页——介绍工具本身，不是方案内容
+                animArea.style.display = 'none';
+                stepsArea.style.width = '100%';
+                stepsArea.innerHTML = `
+                    <div style="padding:8px 6px;line-height:1.7;">
+                        <h2 style="font-size:18px;margin:0 0 4px;color:#1f2937;">HTML 汇报助手</h2>
+                        <p style="font-size:11px;color:#999;margin:0 0 14px;">by your-name · 基于 AI + GitHub 云端</p>
+
+                        <h3 style="font-size:13px;margin:0 0 6px;color:#1f2937;">🧩 是什么</h3>
+                        <p style="font-size:12px;color:#555;margin:0 0 12px;">
+                            把 Word / PPT / Markdown 方案转成 HTML，加上在线评论 + AI 实时改 + 多视图能力，一键部署到云端。生成一条链接发给老板/同事，打开就能看、能评、能让 AI 当场改。
+                        </p>
+
+                        <h3 style="font-size:13px;margin:0 0 6px;color:#1f2937;">❗ 解决什么问题</h3>
+                        <p style="font-size:12px;color:#555;margin:0 0 12px;">
+                            以前看方案 → 截图批注 → 拉群讨论 → 回去改稿 → 再发 → 反复几轮。<br>
+                            现在打开链接直接在页面上评论或让 AI 改，所有人看到的都是同一份最新版，反馈零成本、迭代秒级。
+                        </p>
+
+                        <h3 style="font-size:13px;margin:0 0 6px;color:#1f2937;">⚡ 核心能力</h3>
+                        <ul style="font-size:12px;color:#555;padding-left:18px;margin:0 0 12px;line-height:1.8;">
+                            <li><b>颗粒度评论</b> — 点任意文字/图片/数据直接评；PC 支持 ⌘+click 多选 / 拖动框选跨元素批量评</li>
+                            <li><b>AI 实时改</b> — 选中元素描述改动（换词、改色、删元素），3-15 秒页面直接变（单次最多 6 个）</li>
+                            <li><b>版本可撤回</b> — 每次 AI 改前自动存档，一键回到改之前</li>
+                            <li><b>评论可导出</b> — 方案 owner 一键导出全部反馈，丢给 WorkBuddy 批量返工</li>
+                            <li><b>PC / 手机双视图</b> — 同链接自适应，能力一致（手机唯一区别：不支持拖动框选）</li>
+                            <li><b>零安装</b> — 浏览器打开链接输密码就能用，不装 App、不登录</li>
+                        </ul>
+
+                        <h3 style="font-size:13px;margin:0 0 8px;color:#1f2937;">🚀 怎么用</h3>
+                        <p style="font-size:12px;color:#555;margin:0 0 10px;">按当前设备查看操作指南：</p>
+                        <div style="display:flex;gap:12px;">
+                            <button onclick="switchHelpDevice('pc')" style="flex:1;padding:12px;background:#f0f4ff;border:1.5px solid #667eea;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:#667eea;">💻 PC 端指南 →</button>
+                            <button onclick="switchHelpDevice('mobile')" style="flex:1;padding:12px;background:#f0fdf4;border:1.5px solid #10b981;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:#10b981;">📱 手机端指南 →</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // PC / 手机端：恢复左右拆分（手机视图 或 窄屏 都强制上下布局）
+                animArea.style.display = 'flex';
+                const bodyEl = stepsArea.parentElement;
+                const useMobileLayout = isMobileView() || window.innerWidth < 760;
+                if (useMobileLayout) {
+                    // 手机：上动画 + 下步骤，纵向
+                    bodyEl.style.flexDirection = 'column';
+                    animArea.style.width = '100%';
+                    animArea.style.minHeight = '180px';
+                    animArea.style.maxHeight = '34vh';
+                    animArea.style.padding = '12px';
+                    animArea.style.borderRight = 'none';
+                    animArea.style.borderBottom = '1px solid #f0f0f0';
+                    stepsArea.style.width = '100%';
+                    stepsArea.style.flex = '1';
+                } else {
+                    bodyEl.style.flexDirection = 'row';
+                    animArea.style.width = '55%';
+                    animArea.style.minHeight = '340px';
+                    animArea.style.maxHeight = '';
+                    animArea.style.padding = '20px';
+                    animArea.style.borderRight = '1px solid #f0f0f0';
+                    animArea.style.borderBottom = 'none';
+                    stepsArea.style.width = '45%';
+                    stepsArea.style.flex = '';
+                }
+                renderHelpSteps();
+                switchHelpStep(1);
+            }
+        }
+
+        function openHelp() {
+            document.getElementById('helpModal').style.display = 'flex';
+            // 默认进"关于" Tab
+            switchHelpDevice('about');
+        }
+        function closeHelp() {
+            document.getElementById('helpModal').style.display = 'none';
+            localStorage.setItem(HELP_KEY, '1');
+        }
+
+        // 手机抽屉：点 panel-header 区域切换 expanded（半屏 ↔ 接近全屏）
+        document.addEventListener('click', (e) => {
+            if (!isMobileView()) return;
+            const panel = document.getElementById('commentPanel');
+            if (!panel || !panel.classList.contains('open')) return;
+            const header = e.target.closest('.panel-header');
+            if (!header) return;
+            if (e.target.closest('.panel-close, .panel-tab, button')) return;
+            document.body.classList.toggle('panel-expanded');
+        });
+
+        // 首次访问自动弹（每个用户只弹一次）
+        (function maybeShowHelp() {
+            if (!localStorage.getItem(HELP_KEY)) {
+                setTimeout(openHelp, 500);
+            }
+        })();
+
+        // 评论可见性切换（按钮文字=当前状态：白底"只读"=只读中；蓝底"批注"=批注中）
+        function toggleCommentVisibility() {
+            const on = !document.body.classList.contains('show-comments');
+            document.body.classList.toggle('show-comments', on);
+            localStorage.setItem('show_comments', on ? '1' : '0');
+            const btn = document.getElementById('toggleCommentVisBtn');
+            if (btn) {
+                btn.textContent = on ? '批注' : '只读';
+                btn.style.background = on ? '#667eea' : 'white';
+                btn.style.color = on ? 'white' : '#666';
+                btn.style.borderColor = on ? '#667eea' : '#e0e0e0';
+            }
+        }
+        // 初始化
+        (function initCommentVis() {
+            const saved = localStorage.getItem('show_comments');
+            const on = saved === '1';  // 默认隐藏
+            document.body.classList.toggle('show-comments', on);
+            const btn = document.getElementById('toggleCommentVisBtn');
+            if (btn) {
+                btn.textContent = on ? '批注' : '只读';
+                btn.style.background = on ? '#667eea' : 'white';
+                btn.style.color = on ? 'white' : '#666';
+                btn.style.borderColor = on ? '#667eea' : '#e0e0e0';
+            }
+        })();
+
+        // ========= 一键导出全部评论（云端Gist里的所有评论 → Markdown） =========
+        async function exportAllComments() {
+            const all = await loadAllComments();
+            if (all.length === 0) { alert('暂无评论可导出'); return; }
+
+            let out = '# HTML汇报 - 评论导出\n\n';
+            out += `导出时间：${new Date().toLocaleString('zh-CN')}\n`;
+            out += `在线地址：${location.href}\n`;
+            out += `共 ${all.length} 条评论\n\n---\n\n`;
+
+            const formatItem = (c, i) => {
+                let s = `${i+1}. **${c.author || '匿名'}** _(${c.time})_`;
+                if (c.type === 'ai_executed') s += ' · ⚡AI已执行';
+                if (c.type === 'ai_failed') s += ' · ❌AI失败';
+                if (c.type === 'ai_pending') s += ' · ⏳处理中';
+                s += `\n   范围：${getCommentScopeLabel(c)}\n`;
+                if (c.scope === 'multi' && c.targets && c.targets.length > 1) {
+                    s += '   涉及：' + c.targets.map(t => t.label || '元素').join(' / ') + '\n';
+                }
+                s += `   ${c.text}\n`;
+                if (c.aiResponse) s += `   > AI响应：${c.aiResponse}\n`;
+                s += '\n';
+                return s;
+            };
+
+            // 按 scope 分类
+            const groups = {
+                global: all.filter(c => c.scope === 'global'),
+                multi: all.filter(c => c.scope === 'multi'),
+                section: all.filter(c => c.scope === 'section'),
+                target: all.filter(c => c.scope === 'target')
+            };
+
+            if (groups.global.length > 0) {
+                out += `## 🌐 全局评论\n\n`;
+                groups.global.forEach((c, i) => out += formatItem(c, i));
+                out += `---\n\n`;
+            }
+            if (groups.multi.length > 0) {
+                out += `## 🔗 跨元素评论\n\n`;
+                groups.multi.forEach((c, i) => out += formatItem(c, i));
+                out += `---\n\n`;
+            }
+            if (groups.section.length > 0) {
+                out += `## 📦 模块评论\n\n`;
+                // 按 section 二次分组
+                const bySection = {};
+                groups.section.forEach(c => {
+                    if (!bySection[c.section]) bySection[c.section] = [];
+                    bySection[c.section].push(c);
+                });
+                for (const [sec, list] of Object.entries(bySection)) {
+                    out += `### 【${sectionNames[sec] || sec}】\n\n`;
+                    list.forEach((c, i) => out += formatItem(c, i));
+                }
+                out += `---\n\n`;
+            }
+            if (groups.target.length > 0) {
+                out += `## 🎯 子元素评论\n\n`;
+                const byTarget = {};
+                groups.target.forEach(c => {
+                    if (!byTarget[c.targetId]) byTarget[c.targetId] = [];
+                    byTarget[c.targetId].push(c);
+                });
+                for (const [tid, list] of Object.entries(byTarget)) {
+                    const el = document.querySelector(`[data-target-id="${tid}"]`);
+                    out += `### 【${el ? getTargetLabel(el) : tid}】\n\n`;
+                    list.forEach((c, i) => out += formatItem(c, i));
+                }
+            }
+
+            const blob = new Blob([out], { type: 'text/markdown;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `汇报评论_${new Date().toISOString().slice(0,10)}_${new Date().toTimeString().slice(0,5).replace(':','')}.md`;
+            a.click();
+        }
+
+        // 关闭面板时退出批量模式
+        const _origClosePanel = closePanel;
+        closePanel = function() {
+            _origClosePanel();
+            document.body.classList.remove('batch-mode');
+            const tb = document.getElementById('batchToolbar');
+            if (tb) tb.style.display = 'none';
+            const btb = document.getElementById('batchToggleBtn');
+            if (btb) {
+                btb.textContent = '批量';
+                btb.style.background = '#f0f0f0';
+                btb.style.color = '#666';
+            }
+        };
+
+        // ========= 评论批量操作 =========
+        function toggleBatchMode() {
+            const on = !document.body.classList.contains('batch-mode');
+            document.body.classList.toggle('batch-mode', on);
+            const toolbar = document.getElementById('batchToolbar');
+            toolbar.style.display = on ? 'flex' : 'none';
+            const btn = document.getElementById('batchToggleBtn');
+            btn.textContent = on ? '取消' : '批量';
+            btn.style.background = on ? '#667eea' : '#f0f0f0';
+            btn.style.color = on ? 'white' : '#666';
+            document.getElementById('batchSelectAll').checked = false;
+            renderComments();
+        }
+
+        function toggleSelectAll(checked) {
+            document.querySelectorAll('.batch-cb').forEach(cb => cb.checked = checked);
+            updateBatchCount();
+        }
+
+        function updateBatchCount() {
+            const checked = document.querySelectorAll('.batch-cb:checked').length;
+            const total = document.querySelectorAll('.batch-cb').length;
+            document.getElementById('batchCountLabel').textContent = `已选 ${checked}/${total} 项`;
+            const allCb = document.getElementById('batchSelectAll');
+            allCb.checked = checked > 0 && checked === total;
+            allCb.indeterminate = checked > 0 && checked < total;
+        }
+
+        function getSelectedIndices() {
+            return Array.from(document.querySelectorAll('.batch-cb:checked')).map(cb => parseInt(cb.dataset.idx));
+        }
+
+        async function batchExport() {
+            const indices = getSelectedIndices();
+            if (indices.length === 0) { alert('未选中任何评论'); return; }
+            const all = await loadAllComments();
+
+            let out = `# 评论导出\n\n`;
+            out += `导出时间：${new Date().toLocaleString('zh-CN')}\n`;
+            out += `共 ${indices.length} 条评论\n\n---\n\n`;
+            indices.forEach((i, n) => {
+                const c = all[i];
+                if (!c) return;
+                let typeLabel = '';
+                if (c.type === 'ai_executed') typeLabel = ` [AI已执行 v${c.version}]`;
+                else if (c.type === 'ai_failed') typeLabel = ` [AI失败]`;
+                else if (c.type === 'ai_pending') typeLabel = ` [处理中]`;
+                out += `## ${n+1}. ${c.author || '匿名'} · ${c.time}${typeLabel}\n\n`;
+                out += `范围：${getCommentScopeLabel(c)}\n\n`;
+                out += `${c.text}\n\n`;
+                if (c.aiResponse) out += `> AI回复：${c.aiResponse}\n\n`;
+                out += `---\n\n`;
+            });
+
+            const blob = new Blob([out], { type: 'text/markdown;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `评论_${new Date().toISOString().slice(0,10)}.md`;
+            a.click();
+        }
+
+        async function batchDelete() {
+            const indices = getSelectedIndices();
+            if (indices.length === 0) { alert('未选中任何评论'); return; }
+            if (!confirm(`确定删除选中的 ${indices.length} 条评论？此操作会同步到云端`)) return;
+            const all = await loadAllComments();
+            indices.sort((a,b) => b - a).forEach(i => all.splice(i, 1));
+            await saveAllComments(all);
+            await renderComments();
+            await renderBadges();
+        }
+    </script>
+</body>
+</html>
