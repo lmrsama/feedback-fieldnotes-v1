@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>用户反馈 Field Notes · 汇报版 v1</title>
+    <title>用户反馈 Field Notes · 汇报版 v2（基础版）</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif; background: #fff; padding: 32px 20px; }
@@ -473,12 +473,10 @@
         .stat .k em { font-style: normal; color: #667eea; }
         .stat .l { margin-top: 8px; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #888; font-weight: 500; }
         .stat .d { margin-top: 4px; font-size: 11px; color: #666; }
-
         .chapter-head { display: flex; align-items: baseline; gap: 12px; margin: 48px 0 20px; max-width: 1000px; margin-left: auto; margin-right: auto; }
         .chapter-head .idx { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.18em; color: #667eea; font-weight: 500; }
         .chapter-head h2 { font-size: 18px; font-weight: 600; color: #1a1a1a; letter-spacing: -0.01em; }
         .chapter-head .rule { flex: 1; height: 1px; background: #e8e8e8; margin-left: 8px; }
-
         .themes-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; max-width: 1100px; margin: 0 auto; }
         .theme-card { background: #fff; border: 1px solid #e8ebf5; border-radius: 10px; padding: 18px 20px; position: relative; transition: all .25s; grid-column: span 12; }
         .theme-card:hover { transform: translateY(-2px); box-shadow: 0 10px 24px -12px rgba(102,126,234,0.22); border-color: #c9d1f5; }
@@ -493,13 +491,11 @@
         .theme-card .bar i { display: block; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 2px; }
         .theme-card .count { margin-top: 6px; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #888; display: flex; justify-content: space-between; letter-spacing: 0.08em; }
         @media (max-width: 860px) { .theme-card.hero, .theme-card.sub, .theme-card.row { grid-column: span 12; } }
-
         .filters-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px auto 18px; max-width: 1100px; }
         .chip { font-size: 11px; padding: 6px 11px; border-radius: 999px; border: 1px solid #e0e4ef; background: #fff; color: #666; cursor: pointer; transition: all .18s; letter-spacing: 0.04em; user-select: none; }
         .chip:hover { border-color: #c9d1f5; color: #667eea; }
         .chip.on { background: #667eea; color: #fff; border-color: #667eea; }
         .chip .n { opacity: 0.6; margin-left: 4px; font-size: 10px; }
-
         .notes-wall { columns: 3 300px; column-gap: 14px; max-width: 1100px; margin: 0 auto; }
         @media (max-width: 720px) { .notes-wall { columns: 1; } }
         .note { break-inside: avoid; margin: 0 0 12px; padding: 14px 16px 15px; font-size: 13px; line-height: 1.55; color: #1a1a1a; border-radius: 8px; border: 1px solid #e8ebf5; background: #fff; transition: all .2s; position: relative; }
@@ -510,7 +506,6 @@
         .note.ai { background: #fff7e6; border-color: #f5d78e; }
         .note.ux { background: #fef0f0; border-color: #f5c6c6; }
         .note .cat { display: inline-block; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: #666; font-weight: 600; margin-bottom: 4px; }
-
         .insights-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 1100px; margin: 0 auto; }
         @media (max-width: 860px) { .insights-grid { grid-template-columns: 1fr; } }
         .insight { background: linear-gradient(135deg, #fafbff 0%, #f5f7fe 100%); border: 1px solid #e8ebf5; border-radius: 10px; padding: 20px 22px 22px; position: relative; transition: all .25s; }
@@ -518,7 +513,6 @@
         .insight::before { content: "\201C"; position: absolute; top: -4px; left: 14px; font-size: 50px; font-weight: 700; color: rgba(102,126,234,0.25); line-height: 1; font-family: Georgia, serif; }
         .insight h4 { font-size: 14px; font-weight: 600; color: #1a1a1a; margin: 22px 0 8px; padding-right: 10px; letter-spacing: -0.005em; }
         .insight p { font-size: 12px; color: #555; line-height: 1.75; }
-
         .actions-list { max-width: 1000px; margin: 0 auto; border: 1px solid #e8ebf5; border-radius: 10px; overflow: hidden; background: #fff; }
         .action-row { display: grid; grid-template-columns: 60px 120px 1fr 80px; gap: 16px; padding: 14px 18px; border-bottom: 1px solid #f0f0f0; align-items: center; transition: background .15s; }
         .action-row:last-child { border-bottom: none; }
@@ -534,6 +528,17 @@
         .action-row .act-desc { font-size: 11px; color: #666; line-height: 1.55; }
         .action-row .act-weight { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; color: #667eea; text-align: right; letter-spacing: 0.04em; }
         @media (max-width: 720px) { .action-row { grid-template-columns: 1fr; gap: 6px; } .action-row .act-weight { text-align: left; } }
+
+        /* ========== 基础版：隐藏 AI 相关 UI ========== */
+        body.noai #panelTabs,
+        body.noai #aiSubToolbar,
+        body.noai #versionModal,
+        body.noai #bubbleToolbar .bubble-divider,
+        body.noai #bubbleToolbar [data-bubble-action="ai"],
+        body.noai #mobileCommentCard .mcc-btn-ai { display: none !important; }
+        body.noai #mobileCommentCard .mcc-btn-comment { flex: 1 1 100% !important; width: 100% !important; }
+        body.noai #mobileCommentCard .mcc-tip { content: ""; }
+        body.noai #commentInput { /* 防输入 AI 模式占位 */ }
 
     </style>
 </head>
@@ -552,7 +557,7 @@
         <!-- Tab 切换 -->
         <div id="panelTabs" style="display:flex;border-bottom:1px solid #eee;background:#fafafa;">
             <button class="panel-tab active" data-tab="comment" onclick="switchPanelTab('comment')" style="flex:1;padding:10px;border:none;background:transparent;font-size:12px;cursor:pointer;color:#333;font-weight:600;border-bottom:2px solid transparent;">💬 评论</button>
-            <button class="panel-tab" data-tab="ai" onclick="switchPanelTab('ai')" style="flex:1;padding:10px;border:none;background:transparent;font-size:12px;cursor:pointer;color:#888;font-weight:500;border-bottom:2px solid transparent;">⚡ AI 修改</button>
+            
         </div>
         <!-- 评论Tab的子工具栏：批量、导出 -->
         <div id="commentSubToolbar" style="padding:6px 12px;background:#fafafa;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center;font-size:11px;">
@@ -574,7 +579,7 @@
         <div class="panel-footer">
             <textarea id="commentInput" placeholder="输入评论..."></textarea>
             <button id="panelSendBtn" onclick="panelSend()" style="margin-top:6px;width:100%;padding:8px;background:#667eea;color:white;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;">发送</button>
-            <div style="margin-top:6px;font-size:10px;color:#999;line-height:1.5;" id="commentFooterHint">评论留言不修改页面</div>
+            <div style="margin-top:6px;font-size:10px;color:#999;line-height:1.5;" id="commentFooterHint">💡 本版本仅支持评论，欢迎圈选任意文字/数据留下反馈</div>
         </div>
     </div>
 
@@ -644,8 +649,6 @@
     <!-- v2.11 浮动小工具栏 + inline 输入 + 顶部 toast -->
     <div id="bubbleToolbar">
         <button data-bubble-action="comment" title="写评论">💬 评论</button>
-        <span class="bubble-divider"></span>
-        <button data-bubble-action="ai" title="AI 实时修改">✨ AI 修改</button>
     </div>
     <div id="bubbleInput">
         <div class="bi-head">
@@ -671,84 +674,61 @@
         </div>
         <div class="mcc-list" id="mccList"></div>
         <div class="mcc-foot">
-            <textarea id="mccInput" placeholder="输入评论或 AI 修改诉求..."></textarea>
+            <textarea id="mccInput" placeholder="输入评论..."></textarea>
             <div class="mcc-actions">
                 <button class="mcc-btn-comment" id="mccBtnComment" onclick="submitMobileComment(false)">💬 发表评论</button>
-                <button class="mcc-btn-ai" id="mccBtnAI" onclick="submitMobileComment(true)">✨ AI 修改</button>
+                
             </div>
-            <div class="mcc-tip">评论留言不修改页面 · AI 修改会实时改 HTML</div>
+            <div class="mcc-tip">欢迎留下你的想法，评论会同步给方案作者</div>
         </div>
     </div>
     <div class="container">
         <h1>听见用户 · 便签上的期待</h1>
-        <p class="subtitle">Field Notes Vol.01 · 94 张手写便利贴解码 · 2026.04.27 内部版</p>
+        <p class="subtitle">Field Notes Vol.01 · 94 张手写便利贴解码 · 2026.04.27 内部版 · 基础版（仅评论）</p>
 
-        <!-- =========== 概览 =========== -->
         <div class="commentable" data-section="overview">
-            <p class="lede">我们把散落在桌面上的 6 张现场照片、94 张手写便利贴逐一辨认、归类、聚合——以下是从字迹、词频与语气里读出的用户心声。本页作为汇报使用，可就地评论、可让 AI 当场改。</p>
+            <p class="lede">我们把散落在桌面上的 6 张现场照片、94 张手写便利贴逐一辨认、归类、聚合——以下是从字迹、词频与语气里读出的用户心声。本版本仅支持评论与导出，欢迎圈选任意元素留下看法。</p>
             <div class="stats-row">
-                <div class="stat">
-                    <div class="k">06</div>
-                    <div class="l">Photos</div>
-                    <div class="d">现场照片</div>
-                </div>
-                <div class="stat">
-                    <div class="k"><em>94</em></div>
-                    <div class="l">Sticky Notes</div>
-                    <div class="d">便利贴被解码</div>
-                </div>
-                <div class="stat">
-                    <div class="k">07</div>
-                    <div class="l">Key Themes</div>
-                    <div class="d">核心诉求主题</div>
-                </div>
-                <div class="stat">
-                    <div class="k"><em>38%</em></div>
-                    <div class="l">QB Related</div>
-                    <div class="d">直接指向浏览器</div>
-                </div>
+                <div class="stat"><div class="k">06</div><div class="l">Photos</div><div class="d">现场照片</div></div>
+                <div class="stat"><div class="k"><em>94</em></div><div class="l">Sticky Notes</div><div class="d">便利贴被解码</div></div>
+                <div class="stat"><div class="k">07</div><div class="l">Key Themes</div><div class="d">核心诉求主题</div></div>
+                <div class="stat"><div class="k"><em>38%</em></div><div class="l">QB Related</div><div class="d">直接指向浏览器</div></div>
             </div>
         </div>
 
-        <!-- =========== Top Themes =========== -->
         <div class="chapter-head"><span class="idx">01 / CHAPTER</span><h2>需求热点 · Top 5 主题</h2><span class="rule"></span></div>
         <div class="commentable" data-section="top-themes">
             <div class="themes-grid">
                 <article class="theme-card hero">
-                    <span class="rank">01</span>
-                    <span class="tag">Highest Volume · 34/94</span>
+                    <span class="rank">01</span><span class="tag">Highest Volume · 34/94</span>
                     <h3>QQ浏览器 × Bot/Skill 深度融合</h3>
                     <p>用户最强烈的期待——把浏览器作为办公、学习、娱乐的统一入口：写课题申报、总结视频、建知识库、看小说找文、阅读文献、电商侧边栏。"万物皆可在浏览器里发生。"</p>
                     <div class="bar"><i style="width:92%"></i></div>
                     <div class="count"><span>RELATED NOTES</span><span>34 / 94</span></div>
                 </article>
                 <article class="theme-card sub">
-                    <span class="rank">02</span>
-                    <span class="tag">Ranked · 19/94</span>
+                    <span class="rank">02</span><span class="tag">Ranked · 19/94</span>
                     <h3>Skill 生态建设</h3>
                     <p>模板丰富度、示例完备度、创作工具链、识别智能化。社区要的是"更多样例 + 更低上手门槛"。</p>
                     <div class="bar"><i style="width:74%"></i></div>
                     <div class="count"><span>RELATED NOTES</span><span>19 / 94</span></div>
                 </article>
                 <article class="theme-card row">
-                    <span class="rank">03</span>
-                    <span class="tag">Ranked · 14/94</span>
+                    <span class="rank">03</span><span class="tag">Ranked · 14/94</span>
                     <h3>自动化工作流</h3>
                     <p>日报 / 周报 / 纪要 / 汇报自动生成；自动抓取、整理、推送——减少重复劳动。</p>
                     <div class="bar"><i style="width:62%"></i></div>
                     <div class="count"><span>RELATED NOTES</span><span>14 / 94</span></div>
                 </article>
                 <article class="theme-card row">
-                    <span class="rank">04</span>
-                    <span class="tag">Ranked · 12/94</span>
+                    <span class="rank">04</span><span class="tag">Ranked · 12/94</span>
                     <h3>垂直场景深耕</h3>
                     <p>电商分析、美股研判、财经投研、课题申报、教辅陪练——希望专业度进一步加深。</p>
                     <div class="bar"><i style="width:55%"></i></div>
                     <div class="count"><span>RELATED NOTES</span><span>12 / 94</span></div>
                 </article>
                 <article class="theme-card row">
-                    <span class="rank">05</span>
-                    <span class="tag">Ranked · 15/94</span>
+                    <span class="rank">05</span><span class="tag">Ranked · 15/94</span>
                     <h3>多端 & 体验细节</h3>
                     <p>Mac 专属入口、多端一致、多语言、图像/语音质量、减少广告冗余——基础体验仍是门槛。</p>
                     <div class="bar"><i style="width:48%"></i></div>
@@ -757,7 +737,6 @@
             </div>
         </div>
 
-        <!-- =========== Verbatim Wall =========== -->
         <div class="chapter-head"><span class="idx">02 / CHAPTER</span><h2>便签原声 · Verbatim Wall</h2><span class="rule"></span></div>
         <div class="commentable" data-section="verbatim">
             <div class="filters-row" id="filtersRow">
@@ -778,7 +757,6 @@
                 <div class="note browser" data-f="browser"><span class="cat">QQ Browser</span>搜索并阅读文献</div>
                 <div class="note browser" data-f="browser"><span class="cat">QQ Browser</span>QQ 浏览器的信息汇总功能很好</div>
                 <div class="note browser" data-f="browser"><span class="cat">QQ Browser</span>观看视频时，能把内容下载到 APP，做课件参考</div>
-
                 <div class="note skill" data-f="skill"><span class="cat">Skill</span>优化 Skill 社区，提供更多示例与测试</div>
                 <div class="note skill" data-f="skill"><span class="cat">Skill</span>日报生成 Skill：抓财经新闻、判断情绪、生成投资简报</div>
                 <div class="note skill" data-f="skill"><span class="cat">Skill</span>给儿子做教辅 Skill，可以预习 / 打卡 / 错题</div>
@@ -787,19 +765,16 @@
                 <div class="note skill" data-f="skill"><span class="cat">Skill</span>刷网课：内容 → Skill，减少重复记录</div>
                 <div class="note skill" data-f="skill"><span class="cat">Skill</span>希望 Skill 列表分类更清晰一些</div>
                 <div class="note skill" data-f="skill"><span class="cat">Skill</span>希望有更多 AI 浏览器 Skill</div>
-
                 <div class="note work" data-f="work"><span class="cat">Workflow</span>帮我整理一个月内的周报，一键改写为日报</div>
                 <div class="note work" data-f="work"><span class="cat">Workflow</span>自动汇总当日工作（邮箱/记录/多集）生成汇报</div>
                 <div class="note work" data-f="work"><span class="cat">Workflow</span>用飞书妙记做会议纪要</div>
                 <div class="note work" data-f="work"><span class="cat">Workflow</span>生成企业财报 PPT · 给投资建议</div>
                 <div class="note work" data-f="work"><span class="cat">Workflow</span>结合 CRM，自动化操作 · 提效对外沟通</div>
                 <div class="note work" data-f="work"><span class="cat">Workflow</span>帮我规划一个 10 天的旅游攻略</div>
-
                 <div class="note ai" data-f="ai"><span class="cat">AI</span>STT / TTS · 生成演讲与英语老师 Skill</div>
                 <div class="note ai" data-f="ai"><span class="cat">AI</span>AI 底座接入更多模型（GPT-5 / Claude …）</div>
                 <div class="note ai" data-f="ai"><span class="cat">AI</span>希望 AI 主动推荐感兴趣的内容</div>
                 <div class="note ai" data-f="ai"><span class="cat">AI</span>图片生成可以更智能一些</div>
-
                 <div class="note ux" data-f="ux"><span class="cat">UX</span>减少广告与冗余推送</div>
                 <div class="note ux" data-f="ux"><span class="cat">UX</span>Mac 用户也很多，希望有专属入口</div>
                 <div class="note ux" data-f="ux"><span class="cat">UX</span>版图设计再简洁一点</div>
@@ -807,79 +782,32 @@
             </div>
         </div>
 
-        <!-- =========== Insights =========== -->
         <div class="chapter-head"><span class="idx">03 / CHAPTER</span><h2>读后洞察 · Between the Lines</h2><span class="rule"></span></div>
         <div class="commentable" data-section="insights">
             <div class="insights-grid">
-                <article class="insight">
-                    <h4>浏览器正在被重新定义</h4>
-                    <p>用户不再把 QQ 浏览器当"访问工具"——而是把它视作一个可召唤 Agent、可长出 Skill、可沉淀知识的容器。把这件事讲清楚，比堆功能更重要。</p>
-                </article>
-                <article class="insight">
-                    <h4>Skill 痛点不在"多"，在"找得到 · 写得出"</h4>
-                    <p>示例库、模板、分类、创作引导——Skill 生态需要一个"编辑部"式的运营姿态，而不是单纯上架。</p>
-                </article>
-                <article class="insight">
-                    <h4>自动化是最低门槛的魔法时刻</h4>
-                    <p>日报、周报、纪要、汇报——用户期待的不是 AI 的"惊艳"，而是"把重复的事替我做掉"。这是留存的开关。</p>
-                </article>
+                <article class="insight"><h4>浏览器正在被重新定义</h4><p>用户不再把 QQ 浏览器当"访问工具"——而是把它视作一个可召唤 Agent、可长出 Skill、可沉淀知识的容器。把这件事讲清楚，比堆功能更重要。</p></article>
+                <article class="insight"><h4>Skill 痛点不在"多"，在"找得到 · 写得出"</h4><p>示例库、模板、分类、创作引导——Skill 生态需要一个"编辑部"式的运营姿态，而不是单纯上架。</p></article>
+                <article class="insight"><h4>自动化是最低门槛的魔法时刻</h4><p>日报、周报、纪要、汇报——用户期待的不是 AI 的"惊艳"，而是"把重复的事替我做掉"。这是留存的开关。</p></article>
             </div>
         </div>
 
-        <!-- =========== Action Items =========== -->
         <div class="chapter-head"><span class="idx">04 / CHAPTER</span><h2>平台行动项 · Next Steps</h2><span class="rule"></span></div>
         <div class="commentable" data-section="actions">
             <div class="actions-list">
-                <div class="action-row">
-                    <span class="act-idx">A01</span>
-                    <span class="act-tag cap">容器定位</span>
-                    <div>
-                        <div class="act-title">把"浏览器=Agent/Skill/知识库容器"讲成产品主线</div>
-                        <div class="act-desc">首页叙事、开屏动画、Onboarding 统一指向这套定位，替换现有"更快更省流"类表达。</div>
-                    </div>
-                    <span class="act-weight">P0 · 34 票</span>
-                </div>
-                <div class="action-row">
-                    <span class="act-idx">A02</span>
-                    <span class="act-tag skl">Skill 编辑部</span>
-                    <div>
-                        <div class="act-title">Skill 示例库 + 模板商店 + 创作引导三件套</div>
-                        <div class="act-desc">不是一个市场入口，而是一个"有主编的内容位"：每周挑 Skill、专题策划、创作者榜单、官方教程。</div>
-                    </div>
-                    <span class="act-weight">P0 · 19 票</span>
-                </div>
-                <div class="action-row">
-                    <span class="act-idx">A03</span>
-                    <span class="act-tag wf">自动化工作流</span>
-                    <div>
-                        <div class="act-title">日报 / 周报 / 纪要 / 汇报 四件套官方 Skill</div>
-                        <div class="act-desc">作为"省时间"的认知锚点，不一定是技术最强，但一定是用户最先想到的功能。</div>
-                    </div>
-                    <span class="act-weight">P1 · 14 票</span>
-                </div>
-                <div class="action-row">
-                    <span class="act-idx">A04</span>
-                    <span class="act-tag vrt">垂直深耕</span>
-                    <div>
-                        <div class="act-title">优先打穿 2-3 个垂直场景（电商 / 财经 / 教辅）</div>
-                        <div class="act-desc">而不是在所有场景上都做到 70 分。垂直场景的数据和工作流专项接入、和头部生态方联合。</div>
-                    </div>
-                    <span class="act-weight">P1 · 12 票</span>
-                </div>
-                <div class="action-row">
-                    <span class="act-idx">A05</span>
-                    <span class="act-tag ux">多端 & 体验</span>
-                    <div>
-                        <div class="act-title">Mac 专属入口 + 多端登录态 + 广告减法</div>
-                        <div class="act-desc">这些都是"负分项"——不是亮点，但不做会被持续扣分，尤其是 Mac 用户的抱怨已经汇聚成信号。</div>
-                    </div>
-                    <span class="act-weight">P2 · 15 票</span>
-                </div>
+                <div class="action-row"><span class="act-idx">A01</span><span class="act-tag cap">容器定位</span><div><div class="act-title">把"浏览器=Agent/Skill/知识库容器"讲成产品主线</div><div class="act-desc">首页叙事、开屏动画、Onboarding 统一指向这套定位，替换现有"更快更省流"类表达。</div></div><span class="act-weight">P0 · 34 票</span></div>
+                <div class="action-row"><span class="act-idx">A02</span><span class="act-tag skl">Skill 编辑部</span><div><div class="act-title">Skill 示例库 + 模板商店 + 创作引导三件套</div><div class="act-desc">不是一个市场入口，而是一个"有主编的内容位"：每周挑 Skill、专题策划、创作者榜单、官方教程。</div></div><span class="act-weight">P0 · 19 票</span></div>
+                <div class="action-row"><span class="act-idx">A03</span><span class="act-tag wf">自动化工作流</span><div><div class="act-title">日报 / 周报 / 纪要 / 汇报 四件套官方 Skill</div><div class="act-desc">作为"省时间"的认知锚点，不一定是技术最强，但一定是用户最先想到的功能。</div></div><span class="act-weight">P1 · 14 票</span></div>
+                <div class="action-row"><span class="act-idx">A04</span><span class="act-tag vrt">垂直深耕</span><div><div class="act-title">优先打穿 2-3 个垂直场景（电商 / 财经 / 教辅）</div><div class="act-desc">而不是在所有场景上都做到 70 分。垂直场景的数据和工作流专项接入、和头部生态方联合。</div></div><span class="act-weight">P1 · 12 票</span></div>
+                <div class="action-row"><span class="act-idx">A05</span><span class="act-tag ux">多端 & 体验</span><div><div class="act-title">Mac 专属入口 + 多端登录态 + 广告减法</div><div class="act-desc">这些都是"负分项"——不是亮点，但不做会被持续扣分，尤其是 Mac 用户的抱怨已经汇聚成信号。</div></div><span class="act-weight">P2 · 15 票</span></div>
             </div>
         </div>
     </div>
 
     <script>
+        // 基础版标记
+        document.body.classList.add('noai');
+        window.__NO_AI__ = true;
+
         // 便签墙过滤
         (function(){
             const chips = document.querySelectorAll('#filtersRow .chip');
@@ -897,7 +825,8 @@
         // ========================================
         // 配置区
         // ========================================
-        const GIST_ID = '__GIST_ID__';
+        const ENABLE_AI = false;  // 基础版标记：AI 功能彻底关闭
+        const GIST_ID = '6874dd63b2d1c87e828c92cbe61dbdf4';
         const GIST_FILENAME = 'comments.json';
         const VERSIONS_FILENAME = 'versions.json';
 
@@ -905,8 +834,8 @@
         const AI_MODEL = 'deepseek-chat';
 
         // 密钥不再硬编码：通过密码解锁内置的加密密钥块
-        // 部署脚本会把 HEk7kGz8Gaw+Jkj7XiUFSc0I/eSX64Ipk7X4BPEKMqriIoYmU6ikinv1pGKe8gxjkSDYVo21U4H/S8F6xKyTSiRKQIEseO1RXAOSpbE2H1RE/pen9ctpLkMapJ/bN5suHYKLTFKhaew1+6w6xmqvkPkKoxxh1eIhOw== 替换为实际加密数据
-        const ENCRYPTED_KEYS = 'HEk7kGz8Gaw+Jkj7XiUFSc0I/eSX64Ipk7X4BPEKMqriIoYmU6ikinv1pGKe8gxjkSDYVo21U4H/S8F6xKyTSiRKQIEseO1RXAOSpbE2H1RE/pen9ctpLkMapJ/bN5suHYKLTFKhaew1+6w6xmqvkPkKoxxh1eIhOw==';
+        // 部署脚本会把 __ENCRYPTED_KEYS__ 替换为实际加密数据
+        const ENCRYPTED_KEYS = '';
 
         let _cachedKeys = null;
         async function ensureKeys() {
@@ -920,33 +849,8 @@
         }
 
         async function unlockKeys() {
-            // 显式触发密码解锁
-            if (_cachedKeys) return _cachedKeys;
-            const fromStorage = await ensureKeys();
-            if (fromStorage) return fromStorage;
-
-            if (ENCRYPTED_KEYS === '__' + 'ENCRYPTED_KEYS__') {
-                console.warn('未配置加密密钥');
-                return null;
-            }
-            const pwd = prompt('使用 AI 修改需要密码（向页面作者索取）：');
-            if (!pwd) return null;
-            try {
-                const enc = new TextEncoder();
-                const pwdHash = await crypto.subtle.digest('SHA-256', enc.encode(pwd));
-                const keyMaterial = await crypto.subtle.importKey('raw', pwdHash, 'AES-GCM', false, ['decrypt']);
-                const data = Uint8Array.from(atob(ENCRYPTED_KEYS), c => c.charCodeAt(0));
-                const iv = data.slice(0, 12);
-                const ciphertext = data.slice(12);
-                const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, keyMaterial, ciphertext);
-                const obj = JSON.parse(new TextDecoder().decode(plain));
-                localStorage.setItem('_qbk', btoa(JSON.stringify({ t: obj.t, a: obj.a })));
-                _cachedKeys = { token: obj.t, aiKey: obj.a };
-                return _cachedKeys;
-            } catch(e) {
-                alert('密码错误，请刷新重试');
-                return null;
-            }
+            // 基础版（enable_ai=false）：不提供 AI，直接短路
+            return null;
         }
 
         // 兼容旧代码的常量改为getter
@@ -2436,9 +2340,7 @@
                 '.action-row .act-title', '.action-row .act-desc', '.action-row .act-tag',
                 '.chapter-head h2', '.chapter-head .idx'
             ],
-            image: [
-                '.screenshot-item img'
-            ],
+            image: ['.screenshot-item img'],
             data: [
                 '.stat .k em', '.stat .k',
                 '.theme-card .rank', '.theme-card .count', '.theme-card .bar',
@@ -3435,5 +3337,16 @@
             await renderBadges();
         }
     </script>
+
+        // ===== 基础版护栏：拦截所有 AI 入口 =====
+        (function(){
+            const origSubmit = window.submitMobileComment;
+            if (origSubmit) {
+                window.submitMobileComment = function(useAI) {
+                    return origSubmit.call(this, false);  // 强制 useAI=false
+                };
+            }
+        })();
+
 </body>
 </html>
