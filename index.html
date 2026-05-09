@@ -540,6 +540,73 @@
         body.noai #mobileCommentCard .mcc-tip { content: ""; }
         body.noai #commentInput { /* 防输入 AI 模式占位 */ }
 
+    
+        /* ========== 基础版 · 手机端适配修正（v2.1） ========== */
+        @media (max-width: 560px) {
+            body { padding: 16px 12px !important; }
+            .container { max-width: 100% !important; padding: 0 2px !important; }
+
+            h1 { font-size: 22px !important; }
+            .subtitle { font-size: 11px !important; padding: 0 4px !important; }
+            .lede { font-size: 13px !important; padding: 12px 14px !important; text-align: left !important; margin: 0 2px 24px !important; line-height: 1.7 !important; }
+
+            /* 数据卡：4 列 → 2 列 */
+            .stats-row { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; margin: 0 2px 32px !important; max-width: 100% !important; }
+            .stat { padding: 14px 10px !important; }
+            .stat .k { font-size: 28px !important; }
+
+            /* 章节头 */
+            .chapter-head { margin: 36px 2px 14px !important; }
+            .chapter-head h2 { font-size: 16px !important; }
+            .chapter-head .idx { font-size: 10px !important; }
+
+            /* 主题卡：全部单列 */
+            .themes-grid { grid-template-columns: 1fr !important; gap: 12px !important; max-width: 100% !important; padding: 0 2px !important; }
+            .theme-card, .theme-card.hero, .theme-card.sub, .theme-card.row { grid-column: span 1 !important; padding: 16px !important; }
+            .theme-card h3 { font-size: 15px !important; padding-right: 48px !important; }
+            .theme-card p { font-size: 13px !important; line-height: 1.7 !important; }
+            .theme-card .rank { font-size: 38px !important; right: 14px !important; top: 8px !important; }
+
+            /* 过滤器 */
+            .filters-row { gap: 5px !important; padding: 0 2px !important; max-width: 100% !important; }
+            .chip { font-size: 11px !important; padding: 5px 9px !important; }
+
+            /* 便签墙：单列 */
+            .notes-wall { columns: 1 !important; padding: 0 2px !important; }
+            .note { font-size: 13px !important; padding: 12px 14px !important; line-height: 1.65 !important; }
+
+            /* 洞察：单列 */
+            .insights-grid { grid-template-columns: 1fr !important; gap: 12px !important; padding: 0 2px !important; }
+            .insight { padding: 16px 18px !important; }
+            .insight h4 { font-size: 14px !important; margin-top: 16px !important; }
+            .insight p { font-size: 13px !important; line-height: 1.75 !important; }
+
+            /* 行动项：单列卡片堆叠（网格退化） */
+            .actions-list { margin: 0 2px !important; border-radius: 8px !important; }
+            .action-row { grid-template-columns: 1fr !important; gap: 6px !important; padding: 14px 14px !important; }
+            .action-row .act-idx { font-size: 11px !important; color: #888 !important; }
+            .action-row .act-tag { width: fit-content !important; }
+            .action-row .act-title { font-size: 14px !important; margin-top: 2px !important; }
+            .action-row .act-desc { font-size: 12px !important; line-height: 1.65 !important; }
+            .action-row .act-weight { text-align: left !important; color: #667eea !important; font-size: 11px !important; margin-top: 2px !important; }
+
+            /* 新手引导弹窗：手机显示更紧凑 */
+            #helpModal > div { max-width: 94vw !important; max-height: 90vh !important; margin: 12px !important; }
+            #helpAnim { min-height: 160px !important; max-height: 30vh !important; padding: 10px !important; }
+            #helpSteps { padding: 14px 14px !important; }
+            #helpModal h2 { font-size: 17px !important; }
+            #helpModal h3 { font-size: 13px !important; }
+            #helpModal p, #helpModal li { font-size: 13px !important; line-height: 1.7 !important; }
+            #helpModal ul { padding-left: 18px !important; }
+            /* 关于页的两个跳转按钮：竖排，别挤 */
+            #helpSteps [onclick*="switchHelpDevice('pc')"],
+            #helpSteps [onclick*="switchHelpDevice('mobile')"] {
+                flex: 1 1 100% !important;
+                padding: 12px !important;
+                font-size: 13px !important;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -2996,14 +3063,14 @@
         // 步骤数据 + 按设备区分
         const HELP_STEPS = {
             pc: [
-                { num: 1, title: '⌘ 选中元素', desc: '⌘/Ctrl + 单击元素选中；或空白处拖动框选多个' },
-                { num: 2, title: '💬 评论 + 导出', desc: '点气泡「💬 评论」写反馈；可【📤 导出全部】' },
-                { num: 3, title: '✨ AI 修改 + 撤回', desc: '点气泡「✨ AI 修改」描述改动 → 3-15 秒生效；版本历史可撤回' }
+                { num: 1, title: '⌘ 选中元素', desc: '⌘/Ctrl + 单击元素选中；空白处拖动可框选多个' },
+                { num: 2, title: '💬 写评论', desc: '选中后点气泡里的「💬 评论」，输入看法发送' },
+                { num: 3, title: '📤 导出反馈', desc: '方案作者（我）一键把所有人的评论导出为 Markdown' }
             ],
             mobile: [
-                { num: 1, title: '切批注 + 点元素', desc: '右上角【只读】→【批注】；点元素弹底部卡片' },
-                { num: 2, title: '💬 评论 + 导出', desc: '卡片写反馈 → 发表；可【📤 导出全部】' },
-                { num: 3, title: '✨ AI 修改 + 撤回', desc: '卡片描述改动 → AI 秒改；版本历史可撤回' }
+                { num: 1, title: '切到批注模式', desc: '右上角【只读】按钮点一下切成【批注】' },
+                { num: 2, title: '点元素 + 留言', desc: '点任意文字/数据 → 底部弹卡片 → 输入评论发送' },
+                { num: 3, title: '📤 导出反馈', desc: '方案作者（我）一键把所有人的评论导出为 Markdown' }
             ]
         };
 
@@ -3053,35 +3120,33 @@
                 stepsArea.style.width = '100%';
                 stepsArea.innerHTML = `
                     <div style="padding:8px 6px;line-height:1.7;">
-                        <h2 style="font-size:18px;margin:0 0 4px;color:#1f2937;">HTML 汇报助手</h2>
-                        <p style="font-size:11px;color:#999;margin:0 0 14px;">by your-name · 基于 AI + GitHub 云端</p>
+                        <h2 style="font-size:18px;margin:0 0 4px;color:#1f2937;">用户反馈 Field Notes · 汇报版</h2>
+                        <p style="font-size:11px;color:#999;margin:0 0 14px;">by 黎明睿 · 2026.05 · 基础版（在线评论）</p>
 
-                        <h3 style="font-size:13px;margin:0 0 6px;color:#1f2937;">🧩 是什么</h3>
+                        <h3 style="font-size:13px;margin:0 0 6px;color:#1f2937;">🧩 这是什么</h3>
                         <p style="font-size:12px;color:#555;margin:0 0 12px;">
-                            把 Word / PPT / Markdown 方案转成 HTML，加上在线评论 + AI 实时改 + 多视图能力，一键部署到云端。生成一条链接发给老板/同事，打开就能看、能评、能让 AI 当场改。
+                            这是对 94 张用户反馈便利贴的结构化整理——Top 5 热点、原声墙、读后洞察、平台行动项。
+                            你可以在任意元素上圈选留言，作者会收到全部反馈并决定下一步怎么改。
                         </p>
 
-                        <h3 style="font-size:13px;margin:0 0 6px;color:#1f2937;">❗ 解决什么问题</h3>
-                        <p style="font-size:12px;color:#555;margin:0 0 12px;">
-                            以前看方案 → 截图批注 → 拉群讨论 → 回去改稿 → 再发 → 反复几轮。<br>
-                            现在打开链接直接在页面上评论或让 AI 改，所有人看到的都是同一份最新版，反馈零成本、迭代秒级。
-                        </p>
-
-                        <h3 style="font-size:13px;margin:0 0 6px;color:#1f2937;">⚡ 核心能力</h3>
+                        <h3 style="font-size:13px;margin:0 0 6px;color:#1f2937;">✍️ 你能做什么</h3>
                         <ul style="font-size:12px;color:#555;padding-left:18px;margin:0 0 12px;line-height:1.8;">
-                            <li><b>颗粒度评论</b> — 点任意文字/图片/数据直接评；PC 支持 ⌘+click 多选 / 拖动框选跨元素批量评</li>
-                            <li><b>AI 实时改</b> — 选中元素描述改动（换词、改色、删元素），3-15 秒页面直接变（单次最多 6 个）</li>
-                            <li><b>版本可撤回</b> — 每次 AI 改前自动存档，一键回到改之前</li>
-                            <li><b>评论可导出</b> — 方案 owner 一键导出全部反馈，丢给 WorkBuddy 批量返工</li>
-                            <li><b>PC / 手机双视图</b> — 同链接自适应，能力一致（手机唯一区别：不支持拖动框选）</li>
-                            <li><b>零安装</b> — 浏览器打开链接输密码就能用，不装 App、不登录</li>
+                            <li><b>颗粒度评论</b> — 点任意文字/数据/卡片直接评论</li>
+                            <li><b>批量选择</b>（PC） — ⌘/Ctrl + 单击选多个；或空白处拖动框选</li>
+                            <li><b>手机同链接可用</b> — 点右上角【批注】切批注模式，点元素弹评论卡片</li>
+                            <li><b>评论可筛选、可导出</b> — 作者一键导出所有反馈为 Markdown</li>
                         </ul>
 
-                        <h3 style="font-size:13px;margin:0 0 8px;color:#1f2937;">🚀 怎么用</h3>
-                        <p style="font-size:12px;color:#555;margin:0 0 10px;">按当前设备查看操作指南：</p>
-                        <div style="display:flex;gap:12px;">
-                            <button onclick="switchHelpDevice('pc')" style="flex:1;padding:12px;background:#f0f4ff;border:1.5px solid #667eea;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:#667eea;">💻 PC 端指南 →</button>
-                            <button onclick="switchHelpDevice('mobile')" style="flex:1;padding:12px;background:#f0fdf4;border:1.5px solid #10b981;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:#10b981;">📱 手机端指南 →</button>
+                        <h3 style="font-size:13px;margin:0 0 6px;color:#1f2937;">ℹ️ 本版本说明</h3>
+                        <p style="font-size:12px;color:#555;margin:0 0 12px;">
+                            这是 <b>基础版</b>：只支持"评论 + 导出"，不启用 AI 实时改稿。
+                            所有人看到的都是同一份最新版，你的评论会即时同步给其他读者。
+                        </p>
+
+                        <h3 style="font-size:13px;margin:0 0 8px;color:#1f2937;">🚀 按设备看操作指南</h3>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <button onclick="switchHelpDevice('pc')" style="flex:1 1 140px;min-width:0;padding:10px 8px;background:#f0f4ff;border:1.5px solid #667eea;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;color:#667eea;white-space:nowrap;">💻 PC 端指南 →</button>
+                            <button onclick="switchHelpDevice('mobile')" style="flex:1 1 140px;min-width:0;padding:10px 8px;background:#f0fdf4;border:1.5px solid #10b981;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;color:#10b981;white-space:nowrap;">📱 手机端指南 →</button>
                         </div>
                     </div>
                 `;
