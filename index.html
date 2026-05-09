@@ -533,12 +533,7 @@
         .action-row .act-tag.ux  { background: #FFEBEE; color: #8B2B2B; }
         .action-row .act-title { font-size: 13.5px; font-weight: 600; color: #1a1a1a; margin-bottom: 4px; }
         .action-row .act-desc { font-size: 11.5px; color: #666; line-height: 1.6; }
-        .action-row .act-weight { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; color: #667eea; text-align: right; letter-spacing: 0.04em; }
-
-        .expand-btn { display: none; margin: 16px auto 0; padding: 13px 20px; min-width: 240px; background: #fff; border: 1.5px solid #d4d9f7; border-radius: 999px; color: #667eea; font-size: 13px; font-weight: 600; cursor: pointer; letter-spacing: 0.04em; transition: all .2s; }
-        .expand-btn:hover { background: #f0f4ff; border-color: #667eea; }
-
-        /* ============ 隐藏所有 AI 相关 UI（护栏 · CSS 层） ============ */
+        .action-row .act-weight { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; color: #667eea; text-align: right; letter-spacing: 0.04em; }/* ============ 隐藏所有 AI 相关 UI（护栏 · CSS 层） ============ */
         body.noai #panelTabs,
         body.noai #bubbleToolbar .bubble-divider,
         body.noai #bubbleToolbar [data-bubble-action="ai"],
@@ -572,26 +567,12 @@
             .theme-card .rank { font-size: 40px !important; top: 12px !important; right: 16px !important; }
             .theme-card h3 { font-size: 16.5px !important; padding-right: 54px !important; line-height: 1.4; margin: 4px 0 10px !important; }
             .theme-card p { font-size: 13.5px !important; line-height: 1.75 !important; }
-            .theme-card .count { font-size: 10px !important; margin-top: 10px !important; }
-
-            /* 主题折叠（仅手机）：默认只显示前 3 */
-            body.noai .themes-grid .theme-card:nth-child(n+4) { display: none; }
-            body.noai.themes-expanded .themes-grid .theme-card:nth-child(n+4) { display: block !important; }
-            #themesExpandBtn { margin: 4px 18px 52px !important; width: calc(100% - 36px) !important; min-width: 0 !important; }
-
-            .filters-row { padding: 0 18px !important; margin: 0 0 14px !important; gap: 8px !important; flex-wrap: nowrap !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; scrollbar-width: none; }
+            .theme-card .count { font-size: 10px !important; margin-top: 10px !important; }.filters-row { padding: 0 18px !important; margin: 0 0 14px !important; gap: 8px !important; flex-wrap: nowrap !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; scrollbar-width: none; }
             .filters-row::-webkit-scrollbar { display: none; }
             .chip { font-size: 12.5px !important; padding: 8px 14px !important; flex-shrink: 0 !important; }
 
             .notes-wall { columns: 1 !important; padding: 0 18px !important; margin: 0 0 14px !important; max-width: 100% !important; }
-            .note { font-size: 14px !important; padding: 15px 17px !important; line-height: 1.7 !important; border-radius: 12px !important; margin-bottom: 10px !important; }
-
-            /* 便签折叠（仅手机）：默认只显示前 12 */
-            body.noai .notes-wall .note:nth-child(n+13) { display: none; }
-            body.noai.notes-expanded .notes-wall .note:nth-child(n+13) { display: block !important; }
-            #notesExpandBtn { margin: 4px 18px 52px !important; width: calc(100% - 36px) !important; min-width: 0 !important; }
-
-            .insights-grid { grid-template-columns: 1fr !important; gap: 12px !important; padding: 0 18px !important; margin: 0 0 52px !important; max-width: 100% !important; }
+            .note { font-size: 14px !important; padding: 15px 17px !important; line-height: 1.7 !important; border-radius: 12px !important; margin-bottom: 10px !important; }.insights-grid { grid-template-columns: 1fr !important; gap: 12px !important; padding: 0 18px !important; margin: 0 0 52px !important; max-width: 100% !important; }
             .insight { padding: 22px 22px 24px !important; border-radius: 14px !important; }
             .insight::before { font-size: 52px !important; left: 18px !important; }
             .insight h4 { font-size: 15.5px !important; margin: 22px 0 8px !important; }
@@ -625,12 +606,10 @@
         /* 手机视图强制（view-switcher 点"手机视图"）走同一套折叠 */
         body.mobile-view { background: #fafbff !important; }
         body.mobile-view .container { max-width: 100% !important; padding: 0 !important; }
-        body.mobile-view #themesExpandBtn,
-        body.mobile-view #notesExpandBtn { display: block !important; }
-        body.mobile-view .themes-grid .theme-card:nth-child(n+4) { display: none; }
-        body.mobile-view.themes-expanded .themes-grid .theme-card:nth-child(n+4) { display: block !important; }
-        body.mobile-view .notes-wall .note:nth-child(n+13) { display: none; }
-        body.mobile-view.notes-expanded .notes-wall .note:nth-child(n+13) { display: block !important; }
+        .chapter-hint { max-width: 1100px; margin: -6px auto 16px; padding: 0 4px; font-size: 13px; color: #888; line-height: 1.6; }
+        @media (max-width: 640px) {
+            .chapter-hint { font-size: 13px !important; padding: 0 22px !important; margin: -4px 0 16px !important; max-width: 100% !important; }
+        }
 
     </style>
 </head>
@@ -765,7 +744,7 @@
     </div>
     <div class="container">
         <h1>听见用户 · 便签上的期待</h1>
-        <p class="subtitle">Field Notes Vol.01 · 94 张手写便利贴解码 · 2026.04.27</p>
+        <p class="subtitle">Field Notes Vol.01 · 94 张便利贴解码 · 2026.04.27</p>
 
         <div class="commentable" data-section="overview">
             <p class="lede">把散落的 6 张现场照片、94 张手写便利贴逐一辨认、归类、聚合——以下是从字迹和词频里读出的用户心声。欢迎圈选任意元素留言。</p>
@@ -816,13 +795,13 @@
                     <div class="count"><span>RELATED NOTES</span><span>15 / 94</span></div>
                 </article>
             </div>
-            <button class="expand-btn" id="themesExpandBtn" onclick="toggleExpand('themes')" style="display:none;"><span class="expand-label">展开剩余 2 个主题 ↓</span></button>
         </div>
 
         <div class="chapter-head"><span class="idx">02 / CHAPTER</span><h2>便签原声 · Verbatim Wall</h2></div>
         <div class="commentable" data-section="verbatim">
+            <p class="chapter-hint">从 94 张原始便签里挑出 31 条有代表性的，按分类整理：</p>
             <div class="filters-row" id="filtersRow">
-                <button class="chip on" data-f="all">全部 <span class="n">32</span></button>
+                <button class="chip on" data-f="all">全部 <span class="n">31</span></button>
                 <button class="chip" data-f="browser">QQ Browser <span class="n">9</span></button>
                 <button class="chip" data-f="skill">Skill <span class="n">8</span></button>
                 <button class="chip" data-f="work">Work Flow <span class="n">6</span></button>
@@ -862,7 +841,6 @@
                 <div class="note ux" data-f="ux"><span class="cat">UX</span>版图设计再简洁一点</div>
                 <div class="note ux" data-f="ux"><span class="cat">UX</span>支持多语言下拉 · 同步效率</div>
             </div>
-            <button class="expand-btn" id="notesExpandBtn" onclick="toggleExpand('notes')" style="display:none;"><span class="expand-label">展开全部 32 张便签 ↓</span></button>
         </div>
 
         <div class="chapter-head"><span class="idx">03 / CHAPTER</span><h2>读后洞察 · Between the Lines</h2></div>
@@ -904,52 +882,8 @@
             document.querySelectorAll('#notesWall .note').forEach(n => {
                 n.style.display = (f === 'all' || n.dataset.f === f) ? '' : 'none';
             });
-            // 切换筛选后，重置展开态
-            document.body.classList.remove('notes-expanded');
-            updateExpandButtons();
         });
     })();
-
-    // 展开/收起（折叠长列表，移动端默认折叠）
-    window.toggleExpand = function(kind){
-        const cls = kind === 'themes' ? 'themes-expanded' : 'notes-expanded';
-        document.body.classList.toggle(cls);
-        updateExpandButtons();
-    };
-
-    function updateExpandButtons(){
-        const isMobile = window.matchMedia('(max-width: 640px)').matches
-                      || document.body.classList.contains('mobile-view');
-        // themes
-        const tb = document.getElementById('themesExpandBtn');
-        if (tb) {
-            tb.style.display = isMobile ? 'block' : 'none';
-            const tLabel = tb.querySelector('.expand-label');
-            tLabel.textContent = document.body.classList.contains('themes-expanded')
-                ? '收起 ↑' : '展开剩余 2 个主题 ↓';
-        }
-        // notes：按当前筛选计算可见数
-        const nb = document.getElementById('notesExpandBtn');
-        if (nb) {
-            const activeChip = document.querySelector('#filtersRow .chip.on');
-            const f = activeChip ? activeChip.dataset.f : 'all';
-            const visibleNotes = Array.from(document.querySelectorAll('#notesWall .note'))
-                .filter(n => f === 'all' || n.dataset.f === f);
-            const threshold = 12;
-            nb.style.display = (isMobile && visibleNotes.length > threshold) ? 'block' : 'none';
-            const nLabel = nb.querySelector('.expand-label');
-            nLabel.textContent = document.body.classList.contains('notes-expanded')
-                ? '收起 ↑' : ('展开全部 ' + visibleNotes.length + ' 张便签 ↓');
-        }
-    }
-    window.addEventListener('resize', updateExpandButtons);
-    // 视图切换（PC/手机）时也更新
-    const origSetView = window.setView;
-    if (typeof origSetView === 'function') {
-        window.setView = function(){ const r = origSetView.apply(this, arguments); updateExpandButtons(); return r; };
-    }
-    // 初次计算（延后，等主脚本跑完）
-    setTimeout(updateExpandButtons, 0);
     </script>
 
     <script>
