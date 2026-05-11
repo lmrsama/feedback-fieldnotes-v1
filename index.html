@@ -904,8 +904,8 @@
         const AI_MODEL = 'deepseek-chat';
 
         // 密钥不再硬编码：通过密码解锁内置的加密密钥块
-        // 部署脚本会把 __ENCRYPTED_KEYS__ 替换为实际加密数据
-        const ENCRYPTED_KEYS = '';
+        // 部署脚本会把 CmWCvEyvSdVXqHg37AdL6xKIfhRyAyXPLR/Rk5mZufAna+OEXLWhK/4oLWld4fJypcGttNQjbK86QUgyhwE+XWmT/GMz/b09bqHtc5yUQHcokVAGEII= 替换为实际加密数据
+        const ENCRYPTED_KEYS = 'CmWCvEyvSdVXqHg37AdL6xKIfhRyAyXPLR/Rk5mZufAna+OEXLWhK/4oLWld4fJypcGttNQjbK86QUgyhwE+XWmT/GMz/b09bqHtc5yUQHcokVAGEII=';
 
         let _cachedKeys = null;
         async function ensureKeys() {
@@ -913,14 +913,39 @@
             // 从localStorage读
             try {
                 const saved = JSON.parse(atob(localStorage.getItem('_qbk') || ''));
-                if (saved.t && saved.a) { _cachedKeys = { token: saved.t, aiKey: saved.a }; return _cachedKeys; }
+                if (saved.t && saved.a !== undefined) { _cachedKeys = { token: saved.t, aiKey: saved.a }; return _cachedKeys; }
             } catch(e) {}
             return null; // 不主动弹窗，由调用方决定何时弹
         }
 
         async function unlockKeys() {
-            // 基础版：AI 功能关闭
-            return null;
+            // 先检查缓存
+            if (_cachedKeys) return _cachedKeys;
+            const fromStorage = await ensureKeys();
+            if (fromStorage) return fromStorage;
+
+            if (ENCRYPTED_KEYS === '__' + 'ENCRYPTED_KEYS__') {
+                console.warn('密钥未注入（本地预览）');
+                return null;
+            }
+            const pwd = prompt('请输入访问密码（首次评论需验证，之后自动记住）');
+            if (!pwd) return null;
+            try {
+                const enc = new TextEncoder();
+                const pwdHash = await crypto.subtle.digest('SHA-256', enc.encode(pwd));
+                const keyMaterial = await crypto.subtle.importKey('raw', pwdHash, 'AES-GCM', false, ['decrypt']);
+                const data = Uint8Array.from(atob(ENCRYPTED_KEYS), c => c.charCodeAt(0));
+                const iv = data.slice(0, 12);
+                const ciphertext = data.slice(12);
+                const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, keyMaterial, ciphertext);
+                const obj = JSON.parse(new TextDecoder().decode(plain));
+                localStorage.setItem('_qbk', btoa(JSON.stringify({ t: obj.t, a: obj.a })));
+                _cachedKeys = { token: obj.t, aiKey: obj.a };
+                return _cachedKeys;
+            } catch(e) {
+                alert('密码错误，请重试');
+                return null;
+            }
         }
 
         // 兼容旧代码的常量改为getter
